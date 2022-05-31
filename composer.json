@@ -1,0 +1,34 @@
+{
+    "name": "aternos/hawk",
+    "description": "PHP library to get, replace and delete blocks/entities out of Minecraft region files",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Riccardo",
+            "email": "riccardo@aternos.org"
+        }
+    ],
+    "require": {
+        "php": ">=8.0",
+        "ext-readline": "*",
+        "aternos/nbt": ">=1.4"
+    },
+    "require-dev": {
+        "phpunit/phpunit": ">=9"
+    },
+    "autoload": {
+        "psr-4": {
+            "Aternos\\Hawk\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Aternos\\Hawk\\Tests\\Integration\\": "tests/integration",
+            "Aternos\\Hawk\\Tests\\Unit\\": "tests/unit"
+        }
+    },
+    "scripts": {
+        "test": "phpunit --testdox"
+    }
+}
