@@ -1,21 +1,17 @@
 <?php
 
-namespace Aternos\Hawk\Versions\v2975;
+namespace Aternos\Hawk\Versions\v3105;
 
 use Aternos\Hawk\McCoordinates2D;
 use Aternos\Hawk\McCoordinates3D;
 use Aternos\Hawk\Section;
-use Aternos\Hawk\Versions\v2865\BlockChunkV2865;
+use Aternos\Hawk\Versions\v2975\BlockChunkV2975;
 use Aternos\Nbt\Tag\CompoundTag;
 use Aternos\Nbt\Tag\Tag;
 use Exception;
 
-class BlockChunkV2975 extends BlockChunkV2865
+class BlockChunkV3105 extends BlockChunkV2975
 {
-    protected string $sectionsTagName = "sections";
-
-    protected bool $hasLevelTag = false;
-
     /**
      * @param CompoundTag $tag
      * @param McCoordinates2D $coordinates
@@ -24,7 +20,7 @@ class BlockChunkV2975 extends BlockChunkV2865
      */
     public function newSectionFromTag(CompoundTag $tag, McCoordinates2D $coordinates, int $version): ?Section
     {
-        return SectionV2975::newFromTag($tag, $coordinates, $version);
+        return SectionV3105::newFromTag($tag, $coordinates, $version);
     }
 
     /**
@@ -34,6 +30,6 @@ class BlockChunkV2975 extends BlockChunkV2865
      */
     public function newEmptySection(McCoordinates3D $coordinates, int $version): Section
     {
-        return SectionV2975::newEmpty($coordinates, $version);
+        return SectionV3105::newEmpty($coordinates, $version);
     }
 }
