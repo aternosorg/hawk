@@ -14,12 +14,19 @@ use Aternos\Hawk\Versions\v2730\BlockChunkV2730;
 use Aternos\Hawk\Versions\v2860\BlockChunkV2860;
 use Aternos\Hawk\Versions\v2865\BlockChunkV2865;
 use Aternos\Hawk\Versions\v2975\BlockChunkV2975;
+use Aternos\Hawk\Versions\v3105\BlockChunkV3105;
 use Exception;
 
 class VersionHelper
 {
     private const VERSIONS = [
 
+        3105 => [
+            "name" => "1.19",
+            "class" => BlockChunkV3105::class,
+            "level" => false,
+            "entities" => false,
+        ],
         2975 => [
             "name" => "1.18.2",
             "class" => BlockChunkV2975::class,
