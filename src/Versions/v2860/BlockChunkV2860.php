@@ -19,22 +19,6 @@ class BlockChunkV2860 extends BlockChunkV2730
     protected bool $hasLevelTag = false;
 
     /**
-     * @param int $location
-     * @param int $offset
-     * @param int $compressedDataLength
-     * @param int $compressionScheme
-     * @param Tag $tag
-     * @param McCoordinates2D $coordinates
-     * @param int $version
-     * @throws Exception
-     */
-    public function __construct(int $location, int $offset, int $compressedDataLength, int $compressionScheme, Tag $tag, McCoordinates2D $coordinates, int $version)
-    {
-        parent::__construct($location, $offset, $compressedDataLength, $compressionScheme, $tag, $coordinates, $version);
-
-    }
-
-    /**
      * @param CompoundTag $tag
      * @param McCoordinates2D $coordinates
      * @param int $version
