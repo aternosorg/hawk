@@ -15,6 +15,21 @@ composer require aternos/hawk
 
 ## Usage
 
+### Class File
+
+How to get a file from disk:
+```php
+$file = new File("your/region/file");
+```
+
+How to use setContent() to set up a file stream and getContent() to get the content out of the stream:
+```php
+$file = new File();
+$file->setContent(file_get_contents("your/region/file"));
+"...do stuff here..."
+$contentToBeWritten = $file->getContent();
+```
+
 ### Class Hawk
 
 #### Setups:
