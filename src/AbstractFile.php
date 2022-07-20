@@ -3,6 +3,7 @@
 namespace Aternos\Hawk;
 
 use Exception;
+use phpDocumentor\Reflection\Types\This;
 
 abstract class AbstractFile
 {
@@ -35,11 +36,14 @@ abstract class AbstractFile
     }
 
     /**
-     * @param string $path
+     * @param ?string $path
      * @throws Exception
      */
-    public function __construct(string $path)
+    public function __construct(string $path = null)
     {
+        if ($path == null){
+            return;
+        }
         $this->dir = dirname($path);
         $this->fileName = basename($path);
         $this->fileStream = fopen($this->dir . "/" . $this->fileName, "r+");
@@ -73,6 +77,9 @@ abstract class AbstractFile
      */
     public function getDir(): string
     {
+        if ($this->dir === null){
+            return "";
+        }
         return $this->dir;
     }
 
@@ -128,6 +135,23 @@ abstract class AbstractFile
     public function readStringToUInt8(): int
     {
         return unpack("C", $this->read(1))[1];
+    }
+
+    /**
+     * @param string $content
+     * @return void
+     */
+    public function setContent(string $content): void {
+        $this->fileStream = fopen("php://memory","r+");
+        fputs($this->fileStream, $content);
+    }
+
+    public function getContent(): string {
+        $content = fgets($this->fileStream);
+        if ($content === false){
+            throw new Exception("Error while getting content");
+        }
+        return $content;
     }
 
     /**
