@@ -3,7 +3,6 @@
 namespace Aternos\Hawk;
 
 use Exception;
-use phpDocumentor\Reflection\Types\This;
 
 abstract class AbstractFile
 {
@@ -12,9 +11,9 @@ abstract class AbstractFile
      */
     protected $fileStream;
 
-    protected string $fileName;
+    protected ?string $fileName = null;
 
-    protected string $dir;
+    protected ?string $dir = null;
 
     /**
      * @param int $int Uint32 big endian
@@ -41,20 +40,20 @@ abstract class AbstractFile
      */
     public function __construct(string $path = null)
     {
-        if ($path == null){
+        if ($path === null) {
             return;
         }
         $this->dir = dirname($path);
         $this->fileName = basename($path);
         $this->fileStream = fopen($this->dir . "/" . $this->fileName, "r+");
-        if($this->fileStream === false){
+        if ($this->fileStream === false) {
             throw new Exception("Error while opening file.");
         }
     }
 
     public function __destruct()
     {
-        if(is_resource($this->fileStream)){
+        if (is_resource($this->fileStream)) {
             fclose($this->fileStream);
         }
     }
@@ -66,28 +65,25 @@ abstract class AbstractFile
      */
     public function close(): void
     {
-        if(is_resource($this->fileStream)){
+        if (is_resource($this->fileStream)) {
             fclose($this->fileStream);
         }
     }
 
     /**
      * @codeCoverageIgnore
-     * @return string File dir
+     * @return string|null File dir
      */
-    public function getDir(): string
+    public function getDir(): ?string
     {
-        if ($this->dir === null){
-            return "";
-        }
         return $this->dir;
     }
 
     /**
      * @codeCoverageIgnore
-     * @return string File name
+     * @return string|null File name
      */
-    public function getFileName(): string
+    public function getFileName(): ?string
     {
         return $this->fileName;
     }
@@ -141,14 +137,16 @@ abstract class AbstractFile
      * @param string $content
      * @return void
      */
-    public function setContent(string $content): void {
-        $this->fileStream = fopen("php://memory","r+");
+    public function setContent(string $content): void
+    {
+        $this->fileStream = fopen("php://memory", "r+");
         fputs($this->fileStream, $content);
     }
 
-    public function getContent(): string {
+    public function getContent(): string
+    {
         $content = fgets($this->fileStream);
-        if ($content === false){
+        if ($content === false) {
             throw new Exception("Error while getting content");
         }
         return $content;
