@@ -26,6 +26,7 @@ How to use setContent() to set up a file stream and getContent() to get the cont
 ```php
 $file = new File();
 $file->setContent(file_get_contents("your/region/file"));
+$file->setFileName("your/file/name");
 "...do stuff here..."
 $contentToBeWritten = $file->getContent();
 ```
