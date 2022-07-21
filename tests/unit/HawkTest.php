@@ -322,11 +322,9 @@ class HawkTest extends HawkTestCase
     {
         $hawk = new Hawk($blockFiles, $entitiesFiles);
         $entities = $hawk->getEntities("minecraft:chicken", $this->getEntityCoords());
-        $count = count($entities);
         $hawk->deleteEntity($entities[0]);
 
-        $this->expectException(Exception::class);
-        $this->expectExceptionMessage("Entity not found.");
         $entities = $hawk->getEntities("minecraft:chicken", $this->getEntityCoords());
+        $this->assertEmpty($entities);
     }
 }

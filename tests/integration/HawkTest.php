@@ -293,9 +293,8 @@ class HawkTest extends TestCase
         $hawk->save();
 
         $hawk = new Hawk(blockFiles: $blockFiles, entitiesFiles: $entitiesFiles);
-        $this->expectException(Exception::class);
-        $this->expectExceptionMessage("Entity not found.");
-        $hawk->getEntities("minecraft:chicken", $this->getEntityCoords());
+        $entities = $hawk->getEntities("minecraft:chicken", $this->getEntityCoords());
+        $this->assertEmpty($entities);
     }
 
     /**
@@ -314,8 +313,7 @@ class HawkTest extends TestCase
         $hawk->save();
 
         $hawk = new Hawk(blockFiles: $blockFiles, entitiesFiles: $entitiesFiles);
-        $this->expectException(Exception::class);
-        $this->expectExceptionMessage("Entity not found.");
-        $hawk->getEntities("minecraft:chicken", $this->getNegativeEntityCoords());
+        $entities = $hawk->getEntities("minecraft:chicken", $this->getNegativeEntityCoords());
+        $this->assertEmpty($entities);
     }
 }
