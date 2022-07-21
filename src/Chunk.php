@@ -224,7 +224,6 @@ abstract class Chunk
      * @param string $name
      * @param McCoordinatesFloat $coordinates
      * @return Entity[]
-     * @throws Exception
      */
     public function getEntities(string $name, McCoordinatesFloat $coordinates): array
     {
@@ -233,7 +232,6 @@ abstract class Chunk
         $entities = [];
         $found = false;
         $results = [];
-        $exception = new Exception("Entity not found.");
 
         // Filters entities by name for the while loop
         foreach ($this->entities as $entity) {
@@ -250,7 +248,7 @@ abstract class Chunk
             return $results;
         }
         if (count($entities) === 0) {
-            throw $exception;
+            return [];
         }
         // Increases delta up to 13 times
         while ($counter < 13) {
@@ -267,7 +265,7 @@ abstract class Chunk
             $delta = $delta * 10;
             $counter++;
         }
-        throw $exception;
+        return [];
     }
 
     /**
