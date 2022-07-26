@@ -3,6 +3,7 @@
 namespace Aternos\Hawk;
 
 
+use Aternos\Hawk\Exceptions\VersionNotSupportedException;
 use Aternos\Hawk\Versions\v2566\BlockChunkV2566;
 use Aternos\Hawk\Versions\v2567\BlockChunkV2567;
 use Aternos\Hawk\Versions\v2578\BlockChunkV2578;
@@ -116,8 +117,8 @@ class VersionHelper
      */
     protected static function versionSupported(int $version): void
     {
-        if (!array_key_exists($version, self::VERSIONS)) {
-            throw new Exception("Version " . $version . " is not supported.");
+        if (!array_key_exists($version, static::VERSIONS)) {
+            throw new VersionNotSupportedException(static::VERSIONS[$version]["name"]);
         }
     }
 
@@ -129,7 +130,7 @@ class VersionHelper
     public static function getChunkClassFromVersion(int $version): string
     {
         self::versionSupported($version);
-        return self::VERSIONS[$version]["class"];
+        return static::VERSIONS[$version]["class"];
     }
 
     /**
@@ -140,7 +141,7 @@ class VersionHelper
     public static function hasLevelTag(int $version): bool
     {
         self::versionSupported($version);
-        return self::VERSIONS[$version]["level"];
+        return static::VERSIONS[$version]["level"];
     }
 
     /**
@@ -151,6 +152,6 @@ class VersionHelper
     public static function hasEntitiesTag(int $version): bool
     {
         self::versionSupported($version);
-        return self::VERSIONS[$version]["entities"];
+        return static::VERSIONS[$version]["entities"];
     }
 }
