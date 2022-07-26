@@ -141,13 +141,19 @@ abstract class AbstractFile
     {
         $this->fileStream = fopen("php://memory", "r+");
         fputs($this->fileStream, $content);
+        fseek($this->fileStream,0,SEEK_SET);
     }
 
     public function getContent(): string
     {
-        $content = fgets($this->fileStream);
-        if ($content === false) {
-            throw new Exception("Error while getting content");
+        fseek($this->fileStream,0,SEEK_SET);
+        $content = "";
+        while (!feof($this->fileStream)){
+            $currentContent = fgets($this->fileStream);
+            if ($currentContent === false) {
+                throw new Exception("Error while getting content");
+            }
+            $content .= $currentContent;
         }
         return $content;
     }
