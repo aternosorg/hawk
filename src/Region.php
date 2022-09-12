@@ -3,6 +3,7 @@
 namespace Aternos\Hawk;
 
 use Aternos\Hawk\Enums\SeekType;
+use Aternos\Hawk\Exceptions\ChunkDoesNotExistException;
 use Aternos\Nbt\IO\Reader\GZipCompressedStringReader;
 use Aternos\Nbt\IO\Reader\StringReader;
 use Aternos\Nbt\IO\Reader\ZLibCompressedStringReader;
@@ -169,6 +170,9 @@ abstract class Region
         $location = $this->file->readStringToUInt32BigEndian();
         $offset = $location >> 8;
         $length = ($location & 0xFF) * 4096;
+        if ($offset === 0 && $length === 0) {
+            throw new ChunkDoesNotExistException("chunk coordinates: " . $coordinates);
+        }
         $this->file->seek($offset * 4096, SeekType::SEEK_SET);
         $compressedDataLength = $this->file->readStringToUInt32BigEndian();
         $compressionScheme = $this->file->readStringToUInt8();
@@ -179,7 +183,7 @@ abstract class Region
             default => throw new Exception("Wrong compression scheme."),
         };
         $tag = Tag::load($reader);
-        if(!($tag instanceof CompoundTag)){
+        if (!($tag instanceof CompoundTag)) {
             throw new Exception("Wrong tag type.");
         }
         $this->version = $tag->getInt("DataVersion")->getValue();
