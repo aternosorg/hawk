@@ -35,7 +35,7 @@ $contentToBeWritten = $file->getContent();
 
 #### Setups:
 
-Setup for blocks in any supported version:
+Setup for blocks and block entities in any supported version:
 
 ```php
 // New block coordinates
@@ -104,24 +104,47 @@ $entities = $hawk->getEntities($entityName,$entityPos);
 $entities = $hawk->getEntities($entityName,$entityPos);
 $hawk->deleteEntity($entities[0]);
 $hawk->save();
+
+```
+#### Get all block entities in a specific chunk:
+
+```php
+$entities = $hawk->getAllBlockEntitiesFromChunk(McCoordinatesFloat::get3DCoordinates($entityPos));
+```
+
+#### How to get all block entities next to float coordinates (there could be more than just one):
+
+```php
+$entities = $hawk->getBlockEntities($entityName,$entityPos);
+```
+
+#### How to delete a block entity:
+
+```php
+$entities = $hawk->getBlockEntities($entityName,$entityPos);
+$hawk->deleteBlockEntity($entities[0]);
+$hawk->save();
 ```
 
 For more information see these examples: [getBlock.php](examples/getBlock.php), [replaceBlock.php](examples/replaceBlock.php), [getEntity.php](examples/getEntity.php), [getAllEntitiesInChunk.php](examples/getAllEntitiesInChunk.php), [deleteEntity.php](examples/deleteEntity.php).
 
 #### Methods
 
-| Name                                                                                                         | Return type                    | Description                                                                                                 |
-|--------------------------------------------------------------------------------------------------------------|--------------------------------|-------------------------------------------------------------------------------------------------------------|
-| loadBlockRegions([File](src/File.php)[] $files)                                                              | void                           | Load extra "block"("world/region") regions from $files into Hawk                                            |
-| loadEntitiesRegions([File](src/File.php)[] $files)                                                           | void                           | Load extra "entities"("world/entities") regions from $files into Hawk                                       |
-| getBlockRegionFromBlock([McCoordinates3D](src/McCoordinates3D.php) $coordinates)                             | [Region](src/BlockRegion.php)  | Get block region from block at $coordinates                                                                 |
-| getEntitiesRegionFromBlock([McCoordinates3D](src/McCoordinates3D.php) $coordinates)                          | [Region](src/BlockRegion.php)  | Get entities region from block at $coordinates (see McCoordinatesFloat::get3DCoordinates for entity coords) |
-| getBlock([McCoordinates3D](src/McCoordinates3D.php) $coordinates)                                            | [DataBlock](src/DataBlock.php) | Get block at $coordinates                                                                                   |
-| replaceBlock([McCoordinates3D](src/McCoordinates3D.php) $coordinates, string $blockName = "minecraft:stone") | void                           | Replace block at $coordinates with block $blockName                                                         |
-| getEntities(string $name, [McCoordinatesFloat](src/McCoordinatesFloat.php) $coordinates)                     | [Entity](src/Entity.php)[]     | Gets one or multiple entities at $coordinates                                                               |
-| getAllEntitiesFromChunk([McCoordinates3D](src/McCoordinates3D.php) $blockCoordinates)                        | [Entity](src/Entity.php)[]     | Gets all entities in chunk based on $coordinates                                                            |
-| deleteEntity([Entity](src/Entity.php) $entity)                                                               | void                           | Deletes an entity object                                                                                    |
-| save()                                                                                                       | void                           | Save changes to file                                                                                        |
+| Name                                                                                                         | Return type                   | Description                                                                                                |
+|--------------------------------------------------------------------------------------------------------------|-------------------------------|------------------------------------------------------------------------------------------------------------|
+| loadBlockRegions([File](src/File.php)[] $files)                                                              | void                          | Load extra "block"("world/region") regions from $files into Hawk                                           |
+| loadEntitiesRegions([File](src/File.php)[] $files)                                                           | void                          | Load extra "entities"("world/entities") regions from $files into Hawk                                      |
+| getBlockRegionFromBlock([McCoordinates3D](src/McCoordinates3D.php) $coordinates)                             | [Region](src/BlockRegion.php) | Get block region from block at $coordinates                                                                |
+| getEntitiesRegionFromBlock([McCoordinates3D](src/McCoordinates3D.php) $coordinates)                          | [Region](src/BlockRegion.php) | Get entities region from block at $coordinates (see McCoordinatesFloat::get3DCoordinates for entity coords) |
+| getBlock([McCoordinates3D](src/McCoordinates3D.php) $coordinates)                                            | [DataBlock](src/DataBlock.php) | Get block at $coordinates                                                                                  |
+| replaceBlock([McCoordinates3D](src/McCoordinates3D.php) $coordinates, string $blockName = "minecraft:stone") | void                          | Replace block at $coordinates with block $blockName                                                        |
+| getEntities(string $name, [McCoordinatesFloat](src/McCoordinatesFloat.php) $coordinates)                     | [Entity](src/Entity.php)[]    | Gets one or multiple entities at $coordinates                                                              |
+| getAllEntitiesFromChunk([McCoordinates3D](src/McCoordinates3D.php) $blockCoordinates)                        | [Entity](src/Entity.php)[]    | Gets all entities in chunk based on $coordinates                                                           |
+| deleteEntity([Entity](src/Entity.php) $entity)                                                               | void                          | Deletes an entity object                                                                                   |
+| getEntities(string $name, [McCoordinatesFloat](src/McCoordinatesFloat.php) $coordinates)                     | [Entity](src/Entity.php)[]    | Gets one or multiple entities at $coordinates                                                              |
+| getAllEntitiesFromChunk([McCoordinates3D](src/McCoordinates3D.php) $blockCoordinates)                        | [Entity](src/Entity.php)[]    | Gets all entities in chunk based on $coordinates                                                           |
+| deleteEntity([Entity](src/Entity.php) $entity)                                                               | void                          | Deletes an entity object                                                                                   |
+| save()                                                                                                       | void                          | Save changes to file                                                                                       |
 
 ### Class Region
 
