@@ -2,16 +2,17 @@
 
 namespace Aternos\Hawk\Tests\Integration;
 
+use Aternos\Hawk\BlockEntity;
 use Aternos\Hawk\Entity;
 use Aternos\Hawk\File;
 use Aternos\Hawk\Hawk;
 use Aternos\Hawk\McCoordinates3D;
 use Aternos\Hawk\McCoordinatesFloat;
+use Aternos\Hawk\Tests\Unit\HawkTestCase;
 use DirectoryIterator;
 use Exception;
-use PHPUnit\Framework\TestCase;
 
-class HawkTest extends TestCase
+class HawkTest extends HawkTestCase
 {
     public function getBlockCoords(): McCoordinates3D
     {
@@ -28,9 +29,19 @@ class HawkTest extends TestCase
         return new McCoordinatesFloat(1.4, 64, 1.4);
     }
 
+    public function getBlockEntityCoords(): McCoordinatesFloat
+    {
+        return new McCoordinatesFloat(1, 1, 1);
+    }
+
     public function getNegativeEntityCoords(): McCoordinatesFloat
     {
         return new McCoordinatesFloat(-0.4, 64, -0.4);
+    }
+
+    public function getNegativeBlockEntityCoords(): McCoordinatesFloat
+    {
+        return new McCoordinatesFloat(-1, 1, -1);
     }
 
     public function getExactEntityCoords(): McCoordinatesFloat
@@ -153,6 +164,7 @@ class HawkTest extends TestCase
         $hawk = new Hawk(blockFiles: $blockFiles, entitiesFiles: $entitiesFiles);
         $block = $hawk->getBlock($this->getBlockCoords());
         $this->assertEquals("minecraft:furnace", $block->getPaletteBlock()->getName());
+        $this->closeFiles($blockFiles, $entitiesFiles);
     }
 
     /**
@@ -167,6 +179,7 @@ class HawkTest extends TestCase
         $hawk = new Hawk(blockFiles: $blockFiles, entitiesFiles: $entitiesFiles);
         $block = $hawk->getBlock($this->getNegativeBlockCoords());
         $this->assertEquals("minecraft:furnace", $block->getPaletteBlock()->getName());
+        $this->closeFiles($blockFiles, $entitiesFiles);
     }
 
     /**
@@ -187,6 +200,7 @@ class HawkTest extends TestCase
         $hawk = new Hawk(blockFiles: $blockFiles, entitiesFiles: $entitiesFiles);
         $block = $hawk->getBlock($this->getBlockCoords());
         $this->assertEquals("minecraft:wool", $block->getPaletteBlock()->getName());
+        $this->closeFiles($blockFiles, $entitiesFiles);
     }
 
     /**
@@ -207,6 +221,7 @@ class HawkTest extends TestCase
         $hawk = new Hawk(blockFiles: $blockFiles, entitiesFiles: $entitiesFiles);
         $block = $hawk->getBlock($this->getNegativeBlockCoords());
         $this->assertEquals("minecraft:wool", $block->getPaletteBlock()->getName());
+        $this->closeFiles($blockFiles, $entitiesFiles);
     }
 
     /**
@@ -223,6 +238,7 @@ class HawkTest extends TestCase
         foreach ($entities as $entity) {
             $this->assertInstanceOf(Entity::class, $entity);
         }
+        $this->closeFiles($blockFiles, $entitiesFiles);
     }
 
     /**
@@ -239,6 +255,7 @@ class HawkTest extends TestCase
         foreach ($entities as $entity) {
             $this->assertInstanceOf(Entity::class, $entity);
         }
+        $this->closeFiles($blockFiles, $entitiesFiles);
     }
 
     /**
@@ -255,8 +272,9 @@ class HawkTest extends TestCase
         foreach ($entities as $entity) {
             $this->assertInstanceOf(Entity::class, $entity);
             $this->assertEquals("minecraft:chicken", $entity->getName());
-            $this->assertTrue($entity->equals($this->getExactEntityCoords()));
+            $this->assertTrue($entity->getCoordinates()->equals($this->getExactEntityCoords()));
         }
+        $this->closeFiles($blockFiles, $entitiesFiles);
     }
 
     /**
@@ -273,8 +291,9 @@ class HawkTest extends TestCase
         foreach ($entities as $entity) {
             $this->assertInstanceOf(Entity::class, $entity);
             $this->assertEquals("minecraft:chicken", $entity->getName());
-            $this->assertTrue($entity->equals($this->getExactNegativeEntityCoords(),0.1));
+            $this->assertTrue($entity->getCoordinates()->equals($this->getExactNegativeEntityCoords(),0.1));
         }
+        $this->closeFiles($blockFiles, $entitiesFiles);
     }
 
     /**
@@ -295,6 +314,7 @@ class HawkTest extends TestCase
         $hawk = new Hawk(blockFiles: $blockFiles, entitiesFiles: $entitiesFiles);
         $entities = $hawk->getEntities("minecraft:chicken", $this->getEntityCoords());
         $this->assertEmpty($entities);
+        $this->closeFiles($blockFiles, $entitiesFiles);
     }
 
     /**
@@ -315,5 +335,119 @@ class HawkTest extends TestCase
         $hawk = new Hawk(blockFiles: $blockFiles, entitiesFiles: $entitiesFiles);
         $entities = $hawk->getEntities("minecraft:chicken", $this->getNegativeEntityCoords());
         $this->assertEmpty($entities);
+        $this->closeFiles($blockFiles, $entitiesFiles);
+    }
+    /**
+     * @dataProvider provideSingleBlockFile
+     * @param array $blockFiles
+     * @param array $entitiesFiles
+     * @return void
+     * @throws Exception
+     */
+    public function testGetAllBlockEntitiesFromChunk(array $blockFiles, array $entitiesFiles): void
+    {
+        $hawk = new Hawk(blockFiles: $blockFiles, entitiesFiles: $entitiesFiles);
+        $entities = $hawk->getAllBlockEntitiesFromChunk($this->getBlockCoords());
+        foreach ($entities as $entity) {
+            $this->assertInstanceOf(BlockEntity::class, $entity);
+        }
+        $this->closeFiles($blockFiles, $entitiesFiles);
+    }
+
+    /**
+     * @dataProvider provideNegativeSingleBlockFile
+     * @param array $blockFiles
+     * @param array $entitiesFiles
+     * @return void
+     * @throws Exception
+     */
+    public function testGetAllBlockEntitiesFromNegativeChunk(array $blockFiles, array $entitiesFiles): void
+    {
+        $hawk = new Hawk(blockFiles: $blockFiles, entitiesFiles: $entitiesFiles);
+        $entities = $hawk->getAllBlockEntitiesFromChunk($this->getNegativeBlockCoords());
+        foreach ($entities as $entity) {
+            $this->assertInstanceOf(BlockEntity::class, $entity);
+        }
+        $this->closeFiles($blockFiles, $entitiesFiles);
+    }
+
+    /**
+     * @dataProvider provideSingleBlockFile
+     * @param array $blockFiles
+     * @param array $entitiesFiles
+     * @return void
+     * @throws Exception
+     */
+    public function testGetBlockEntities(array $blockFiles, array $entitiesFiles): void
+    {
+        $hawk = new Hawk(blockFiles: $blockFiles, entitiesFiles: $entitiesFiles);
+        $entities = $hawk->getBlockEntities("minecraft:furnace", $this->getBlockEntityCoords());
+        foreach ($entities as $entity) {
+            $this->assertInstanceOf(BlockEntity::class, $entity);
+            $this->assertEquals("minecraft:furnace", $entity->getName());
+            $this->assertTrue($entity->getCoordinates()->equals($this->getBlockEntityCoords()));
+        }
+        $this->closeFiles($blockFiles, $entitiesFiles);
+    }
+
+    /**
+     * @dataProvider provideNegativeSingleBlockFile
+     * @param array $blockFiles
+     * @param array $entitiesFiles
+     * @return void
+     * @throws Exception
+     */
+    public function testGetNegativeBlockEntities(array $blockFiles, array $entitiesFiles): void
+    {
+        $hawk = new Hawk(blockFiles: $blockFiles, entitiesFiles: $entitiesFiles);
+        $entities = $hawk->getBlockEntities("minecraft:furnace", $this->getNegativeBlockEntityCoords());
+        foreach ($entities as $entity) {
+            $this->assertInstanceOf(BlockEntity::class, $entity);
+            $this->assertEquals("minecraft:furnace", $entity->getName());
+            $this->assertTrue($entity->getCoordinates()->equals($this->getNegativeBlockEntityCoords()));
+        }
+        $this->closeFiles($blockFiles, $entitiesFiles);
+    }
+
+    /**
+     * @dataProvider provideSingleBlockFile
+     * @param array $blockFiles
+     * @param array $entitiesFiles
+     * @return void
+     * @throws Exception
+     */
+    public function testDeleteBlockEntity(array $blockFiles, array $entitiesFiles): void
+    {
+        $hawk = new Hawk(blockFiles: $blockFiles, entitiesFiles: $entitiesFiles);
+        $entities = $hawk->getBlockEntities("minecraft:furnace", $this->getBlockEntityCoords());
+        $this->assertEquals("minecraft:furnace", $entities[0]->getName());
+        $hawk->deleteBlockEntity($entities[0]);
+        $hawk->save();
+
+        $hawk = new Hawk(blockFiles: $blockFiles, entitiesFiles: $entitiesFiles);
+        $entities = $hawk->getBlockEntities("minecraft:furnace", $this->getBlockEntityCoords());
+        $this->assertEmpty($entities);
+        $this->closeFiles($blockFiles, $entitiesFiles);
+    }
+
+    /**
+     * @dataProvider provideNegativeSingleBlockFile
+     * @param array $blockFiles
+     * @param array $entitiesFiles
+     * @return void
+     * @throws Exception
+     */
+    public function testDeleteNegativeBlockEntity(array $blockFiles, array $entitiesFiles): void
+    {
+        $hawk = new Hawk(blockFiles: $blockFiles, entitiesFiles: $entitiesFiles);
+        $entities = $hawk->getBlockEntities("minecraft:furnace", $this->getNegativeBlockEntityCoords());
+        $this->assertEquals("minecraft:furnace", $entities[0]->getName());
+        $hawk->deleteBlockEntity($entities[0]);
+        $hawk->save();
+
+        $hawk = new Hawk(blockFiles: $blockFiles, entitiesFiles: $entitiesFiles);
+        $entities = $hawk->getBlockEntities("minecraft:furnace", $this->getNegativeBlockEntityCoords());
+        $this->assertEmpty($entities);
+        $this->closeFiles($blockFiles, $entitiesFiles);
     }
 }

@@ -9,6 +9,15 @@ use Exception;
 
 class RegionTest extends HawkTestCase
 {
+    protected function tearDown(): void
+    {
+        parent::tearDown();
+        foreach ($this->files as $index => $file) {
+            $file->close();
+            unset($this->files[$index]);
+        }
+    }
+
     public function testGetBlockRegionCoordinatesFromBlockCoordinates()
     {
         $this->assertEquals($this->getRegionCoords(),Region::getRegionCoordinatesFromBlockCoordinates($this->getBlockCoords()));
@@ -30,6 +39,7 @@ class RegionTest extends HawkTestCase
     public function testGetBlockRegionCoordinatesFromFile(array $blockFiles, array $entitiesFiles): void
     {
         $this->assertEquals($this->getRegionCoords(), Region::getRegionCoordinatesFromFile($blockFiles[0]));
+        $this->closeFiles($blockFiles, $entitiesFiles);
     }
 
     /**
@@ -41,6 +51,7 @@ class RegionTest extends HawkTestCase
     public function testGetNegativeBlockRegionCoordinatesFromFile(array $blockFiles, array $entitiesFiles): void
     {
         $this->assertEquals($this->getNegativeRegionCoords(), Region::getRegionCoordinatesFromFile($blockFiles[0]));
+        $this->closeFiles($blockFiles, $entitiesFiles);
     }
 
     public function testGetRegionFileNameFromBlock(): void
@@ -61,6 +72,7 @@ class RegionTest extends HawkTestCase
         $this->assertEquals($blockFiles[0]->getFileName(),$mock->getFileName());
         $this->assertEquals($blockFiles[0],$mock->getFile());
         $this->assertEquals(Region::getRegionCoordinatesFromFile($blockFiles[0]),$mock->getCoordinates());
+        $this->closeFiles($blockFiles, $entitiesFiles);
     }
 
     /**
@@ -75,6 +87,7 @@ class RegionTest extends HawkTestCase
         $mock = $this->getMockForAbstractClass(Region::class,$blockFiles);
         $chunk = $mock->getChunkFromBlock($this->getBlockCoords());
         $this->assertInstanceOf(Chunk::class, $chunk);
+        $this->closeFiles($blockFiles, $entitiesFiles);
     }
 
     /**
@@ -89,6 +102,7 @@ class RegionTest extends HawkTestCase
         $mock = $this->getMockForAbstractClass(Region::class,$blockFiles);
         $chunk = $mock->getChunkFromChunk($this->getChunkCoords());
         $this->assertInstanceOf(Chunk::class, $chunk);
+        $this->closeFiles($blockFiles, $entitiesFiles);
     }
 
     /**
@@ -108,7 +122,6 @@ class RegionTest extends HawkTestCase
             ->method('readChunk');
         $chunk = $mock->getChunk($this->getChunkCoords());
         $this->assertInstanceOf(Chunk::class, $chunk);
+        $this->closeFiles($blockFiles, $entitiesFiles);
     }
-
-
 }

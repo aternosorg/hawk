@@ -109,7 +109,7 @@ class Hawk
     public function getBlockRegionFromBlock(McCoordinates3D $coordinates): BlockRegion
     {
         $region = $this->getRegion($this->blockRegions, Region::getRegionCoordinatesFromBlockCoordinates($coordinates));
-        if (!($region instanceof BlockRegion)){
+        if (!($region instanceof BlockRegion)) {
             throw new Exception("Not a block region.");
         }
         return $region;
@@ -123,7 +123,7 @@ class Hawk
     public function getEntitiesRegionFromBlock(McCoordinates3D $coordinates): EntitiesRegion
     {
         $region = $this->getRegion($this->entitiesRegions, Region::getRegionCoordinatesFromBlockCoordinates($coordinates));
-        if (!($region instanceof EntitiesRegion)){
+        if (!($region instanceof EntitiesRegion)) {
             throw new Exception("Not a entities region.");
         }
         return $region;
@@ -212,13 +212,22 @@ class Hawk
      * @return array
      * @throws Exception
      */
+    public function getBlockEntities(string $name, McCoordinatesFloat $coordinates): array
+    {
+        $region = $this->getBlockRegionFromBlock(McCoordinatesFloat::get3DCoordinates($coordinates));
+        return $region->getBlockEntities($name, $coordinates);
+    }
+
+    /**
+     * @param string $name
+     * @param McCoordinatesFloat $coordinates
+     * @return array
+     * @throws Exception
+     */
     protected function getEntitiesFromEntitiesRegion(string $name, McCoordinatesFloat $coordinates): array
     {
         $region = $this->getEntitiesRegionFromBlock(McCoordinatesFloat::get3DCoordinates($coordinates));
-        if ($region instanceof EntitiesRegion) {
-            return $region->getEntities($name, $coordinates);
-        }
-        throw new Exception("Wrong region type");
+        return $region->getEntities($name, $coordinates);
     }
 
     /**
@@ -230,10 +239,7 @@ class Hawk
     protected function getEntitiesFromBlockRegion(string $name, McCoordinatesFloat $coordinates): array
     {
         $region = $this->getBlockRegionFromBlock(McCoordinatesFloat::get3DCoordinates($coordinates));
-        if ($region instanceof BlockRegion) {
-            return $region->getEntities($name, $coordinates);
-        }
-        throw new Exception("Wrong region type");
+        return $region->getEntities($name, $coordinates);
     }
 
     /**
@@ -244,38 +250,15 @@ class Hawk
     public function getAllEntitiesFromChunk(McCoordinates3D $blockCoordinates): array
     {
         if ($this->hasNoEntitiesRegions) {
-            return $this->getAllEntitiesFromBlockChunk($blockCoordinates);
+            return $this->getBlockRegionFromBlock($blockCoordinates)->getAllEntitiesFromBlockChunk($blockCoordinates);
         } else {
-            return $this->getAllEntitiesFromEntitiesChunk($blockCoordinates);
+            return $this->getEntitiesRegionFromBlock($blockCoordinates)->getAllEntitiesFromEntitiesChunk($blockCoordinates);
         }
     }
 
-    /**
-     * @param McCoordinates3D $blockCoordinates
-     * @return array
-     * @throws Exception
-     */
-    protected function getAllEntitiesFromEntitiesChunk(McCoordinates3D $blockCoordinates): array
+    public function getAllBlockEntitiesFromChunk(McCoordinates3D $blockCoordinates): array
     {
-        $entities = [];
-        foreach ($this->getEntitiesRegionFromBlock($blockCoordinates)->getAllEntitiesFromEntitiesChunk($blockCoordinates) as $entity) {
-            $entities[] = $entity;
-        }
-        return $entities;
-    }
-
-    /**
-     * @param McCoordinates3D $blockCoordinates
-     * @return array
-     * @throws Exception
-     */
-    protected function getAllEntitiesFromBlockChunk(McCoordinates3D $blockCoordinates): array
-    {
-        $entities = [];
-        foreach ($this->getBlockRegionFromBlock($blockCoordinates)->getAllEntitiesFromBlockChunk($blockCoordinates) as $entity) {
-            $entities[] = $entity;
-        }
-        return $entities;
+        return $this->getBlockRegionFromBlock($blockCoordinates)->getAllBlockEntitiesFromBlockChunk($blockCoordinates);
     }
 
     /**
@@ -286,40 +269,22 @@ class Hawk
     public function deleteEntity(Entity $entity): void
     {
         if ($this->hasNoEntitiesRegions) {
-            $this->deleteEntityFromBlockChunk($entity);
+            $region = $this->getBlockRegionFromBlock(McCoordinatesFloat::get3DCoordinates($entity->getCoordinates()));
         } else {
-            $this->deleteEntityFromEntityChunk($entity);
+            $region = $this->getEntitiesRegionFromBlock(McCoordinatesFloat::get3DCoordinates($entity->getCoordinates()));
         }
+        $region->deleteEntity($entity);
     }
 
     /**
-     * @param Entity $entity
+     * @param BlockEntity $entity
      * @return void
      * @throws Exception
      */
-    protected function deleteEntityFromEntityChunk(Entity $entity): void
+    public function deleteBlockEntity(BlockEntity $entity): void
     {
-        $region = $this->getEntitiesRegionFromBlock(McCoordinatesFloat::get3DCoordinates($entity->getCoordinates()));
-        if ($region instanceof EntitiesRegion) {
-            $region->deleteEntity($entity);
-            return;
-        }
-        throw new Exception("Wrong region type");
-    }
-
-    /**
-     * @param Entity $entity
-     * @return void
-     * @throws Exception
-     */
-    protected function deleteEntityFromBlockChunk(Entity $entity): void
-    {
-        $region = $this->getBlockRegionFromBlock(McCoordinatesFloat::get3DCoordinates($entity->getCoordinates()));
-        if ($region instanceof BlockRegion) {
-            $region->deleteEntity($entity);
-            return;
-        }
-        throw new Exception("Wrong region type");
+        $region = $this->getBlockRegionFromBlock($entity->getCoordinates());
+        $region->deleteBlockEntity($entity);
     }
 
     /**

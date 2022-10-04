@@ -31,6 +31,6 @@ abstract class McCoordinates
      */
     public function equals(McCoordinates $coordinates): bool
     {
-        return $this->x === $coordinates->x && $this->z === $coordinates->z;
+        return floatval($this->x) === floatval($coordinates->x) && floatval($this->z) === floatval($coordinates->z);
     }
 }

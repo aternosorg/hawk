@@ -16,6 +16,25 @@ use PHPUnit\Framework\TestCase;
 
 class HawkTestCase extends TestCase
 {
+    protected function closeFiles(array $blockFiles, array $entitiesFiles) {
+        $this->files = array_reverse($this->files);
+        foreach ($this->files as $index => $file) {
+            $file->close();
+            unset($this->files[$index]);
+        }
+        foreach ($blockFiles as $blockFile) {
+            $blockFile->close();
+        }
+        foreach ($entitiesFiles as $entitiesFile) {
+            $entitiesFile->close();
+        }
+    }
+
+    /**
+     * @var File[]
+     */
+    public array $files = [];
+
     public const VERSIONS_WITHOUT_ENTITIES_FILES = [
         "1.16",
         "1.16.1",
@@ -27,22 +46,22 @@ class HawkTestCase extends TestCase
 
     public function getRegionCoords(): McCoordinates2D
     {
-        return new McCoordinates2D(0,0);
+        return new McCoordinates2D(0, 0);
     }
 
     public function getNegativeRegionCoords(): McCoordinates2D
     {
-        return new McCoordinates2D(-1,-1);
+        return new McCoordinates2D(-1, -1);
     }
 
     public function getChunkCoords(): McCoordinates2D
     {
-        return new McCoordinates2D(0,0);
+        return new McCoordinates2D(0, 0);
     }
 
     public function getNegativeChunkCoords(): McCoordinates2D
     {
-        return new McCoordinates2D(-1,-1);
+        return new McCoordinates2D(-1, -1);
     }
 
     public function getBlockCoords(): McCoordinates3D
@@ -52,20 +71,25 @@ class HawkTestCase extends TestCase
 
     public function getNegativeBlockCoords(): McCoordinates3D
     {
-        return new McCoordinates3D(-1,0,-1);
+        return new McCoordinates3D(-1, 0, -1);
     }
 
     public function provide3DCoordinates(): array
     {
         return [
-            new McCoordinates3D(1,1,1,),
-            new McCoordinates3D(-1,1,-1,),
+            new McCoordinates3D(1, 1, 1,),
+            new McCoordinates3D(-1, 1, -1,),
         ];
     }
 
     public function getEntityCoords(): McCoordinatesFloat
     {
         return new McCoordinatesFloat(1.5, 64, 1.5);
+    }
+
+    public function getBlockEntityCoords(): McCoordinatesFloat
+    {
+        return new McCoordinatesFloat(1, 1, 1);
     }
 
     public function getNegativeEntityCoords(): McCoordinatesFloat
@@ -81,7 +105,7 @@ class HawkTestCase extends TestCase
     public function getBlockChunk(AbstractFile $blockfile): BlockChunk
     {
         $chunk = $this->getBlockRegion($blockfile)->getChunkFromBlock($this->getBlockCoords());
-        if($chunk instanceof BlockChunk){
+        if ($chunk instanceof BlockChunk) {
             return $chunk;
         }
         throw new Exception("Not a BlockChunk");
@@ -105,23 +129,17 @@ class HawkTestCase extends TestCase
                 $dirName = $version->getFilename();
                 $versionName = explode("(", $dirName)[0];
                 $major = explode(".", $versionName)[1];
+                $regionFile = new File(__DIR__ . "/../../examples/resources/versions/" . $dirName . "/region/r.0.0.mca");
+                $this->files[] = $regionFile;
+                $entityFile = null;
                 if ($major > 16) {
-                    $blockFiles[$versionName] = [
-                        [
-                            new File(__DIR__ . "/../../examples/resources/versions/" . $dirName . "/region/r.0.0.mca")
-                        ],
-                        [
-                            new File(__DIR__ . "/../../examples/resources/versions/" . $dirName . "/entities/r.0.0.mca")
-                        ],
-                    ];
-                } else {
-                    $blockFiles[$versionName] = [
-                        [
-                            new File(__DIR__ . "/../../examples/resources/versions/" . $dirName . "/region/r.0.0.mca")
-                        ],
-                        []
-                    ];
+                    $entityFile = new File(__DIR__ . "/../../examples/resources/versions/" . $dirName . "/entities/r.0.0.mca");
+                    $this->files[] = $entityFile;
                 }
+                $blockFiles[$versionName] = [
+                    [$regionFile],
+                    $entityFile !== null ? [$entityFile] : []
+                ];
             }
         }
         return $blockFiles;
@@ -140,23 +158,17 @@ class HawkTestCase extends TestCase
                 $dirName = $version->getFilename();
                 $versionName = explode("(", $dirName)[0];
                 $major = explode(".", $versionName)[1];
+                $regionFile = new File(__DIR__ . "/../../examples/resources/versions/" . $dirName . "/region/r.-1.-1.mca");
+                $this->files[] = $regionFile;
+                $entityFile = null;
                 if ($major > 16) {
-                    $blockFiles[$versionName] = [
-                        [
-                            new File(__DIR__ . "/../../examples/resources/versions/" . $dirName . "/region/r.-1.-1.mca")
-                        ],
-                        [
-                            new File(__DIR__ . "/../../examples/resources/versions/" . $dirName . "/entities/r.-1.-1.mca")
-                        ],
-                    ];
-                } else {
-                    $blockFiles[$versionName] = [
-                        [
-                            new File(__DIR__ . "/../../examples/resources/versions/" . $dirName . "/region/r.-1.-1.mca")
-                        ],
-                        []
-                    ];
+                    $entityFile = new File(__DIR__ . "/../../examples/resources/versions/" . $dirName . "/entities/r.-1.-1.mca");
+                    $this->files[] = $entityFile;
                 }
+                $blockFiles[$versionName] = [
+                    [$regionFile],
+                    $entityFile !== null ? [$entityFile] : []
+                ];
             }
         }
         return $blockFiles;
@@ -171,25 +183,22 @@ class HawkTestCase extends TestCase
                 $dirName = $version->getFilename();
                 $versionName = explode("(", $dirName)[0];
                 $major = explode(".", $versionName)[1];
+                $blockFiles[$versionName] = [];
+                $regionFile = new File(__DIR__ . "/../../examples/resources/versions/" . $dirName . "/region/r.0.0.mca");
+                $regionFileTwo = new File(__DIR__ . "/../../examples/resources/versions/" . $dirName . "/region/r.-1.-1.mca");
+                $blockFiles[$versionName][] = [$regionFile, $regionFileTwo];
+                $this->files[] = $regionFile;
+                $this->files[] = $regionFileTwo;
+                $entityFile = null;
+                $entityFileTwo = null;
                 if ($major > 16) {
-                    $blockFiles[$versionName] = [
-                        [
-                            new File(__DIR__ . "/../../examples/resources/versions/" . $dirName . "/region/r.0.0.mca"),
-                            new File(__DIR__ . "/../../examples/resources/versions/" . $dirName . "/region/r.-1.-1.mca"),
-                        ],
-                        [
-                            new File(__DIR__ . "/../../examples/resources/versions/" . $dirName . "/entities/r.0.0.mca"),
-                            new File(__DIR__ . "/../../examples/resources/versions/" . $dirName . "/entities/r.-1.-1.mca"),
-                        ],
-                    ];
-                }else{
-                    $blockFiles[$versionName] = [
-                        [
-                            new File(__DIR__ . "/../../examples/resources/versions/" . $dirName . "/region/r.0.0.mca"),
-                            new File(__DIR__ . "/../../examples/resources/versions/" . $dirName . "/region/r.-1.-1.mca"),
-                        ],
-                        []
-                    ];
+                    $entityFile = new File(__DIR__ . "/../../examples/resources/versions/" . $dirName . "/entities/r.0.0.mca");
+                    $entityFileTwo = new File(__DIR__ . "/../../examples/resources/versions/" . $dirName . "/entities/r.-1.-1.mca");
+                    $blockFiles[$versionName][] = [$entityFile, $entityFileTwo];
+                    $this->files[] = $entityFile;
+                    $this->files[] = $entityFileTwo;
+                } else {
+                    $blockFiles[$versionName][] = [];
                 }
             }
         }
@@ -204,28 +213,27 @@ class HawkTestCase extends TestCase
             if (!$version->isDot()) {
                 $dirName = $version->getFilename();
                 $versionName = explode("(", $dirName)[0];
-                $blockFiles[$versionName] = [
-                    [
-                        new File(__DIR__ . "/../../examples/resources/versions/" . $dirName . "/region/r.0.0.mca"),
-                        new File(__DIR__ . "/../../examples/resources/versions/" . $dirName . "/region/r.0.0.mca"),
-                    ],
-                    []
-                ];
                 $major = explode(".", $versionName)[1];
+                $blockFiles[$versionName] = [];
+                $regionFile = new File(__DIR__ . "/../../examples/resources/versions/" . $dirName . "/region/r.0.0.mca");
+                $regionFileTwo = new File(__DIR__ . "/../../examples/resources/versions/" . $dirName . "/region/r.0.0.mca");
+                $blockFiles[$versionName][] = [$regionFile, $regionFileTwo];
+                $this->files[] = $regionFile;
+                $this->files[] = $regionFileTwo;
+                $entityFile = null;
+                $entityFileTwo = null;
                 if ($major > 16) {
-                    $blockFiles[$versionName] = [
-                        [
-                            new File(__DIR__ . "/../../examples/resources/versions/" . $dirName . "/region/r.0.0.mca"),
-                            new File(__DIR__ . "/../../examples/resources/versions/" . $dirName . "/region/r.0.0.mca")
-                        ],
-                        [
-                            new File(__DIR__ . "/../../examples/resources/versions/" . $dirName . "/entities/r.0.0.mca"),
-                            new File(__DIR__ . "/../../examples/resources/versions/" . $dirName . "/entities/r.0.0.mca")
-                        ],
-                    ];
+                    $entityFile = new File(__DIR__ . "/../../examples/resources/versions/" . $dirName . "/entities/r.0.0.mca");
+                    $entityFileTwo = new File(__DIR__ . "/../../examples/resources/versions/" . $dirName . "/entities/r.0.0.mca");
+                    $blockFiles[$versionName][] = [$entityFile, $entityFileTwo];
+                    $this->files[] = $entityFile;
+                    $this->files[] = $entityFileTwo;
+                } else {
+                    $blockFiles[$versionName][] = [];
                 }
             }
         }
+        $this->files = array_merge($this->files, $blockFiles);
         return $blockFiles;
     }
 

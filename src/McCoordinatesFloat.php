@@ -26,14 +26,38 @@ class McCoordinatesFloat extends McCoordinates
     }
 
     /**
-     * @param McCoordinates $coordinates
+     * @param McCoordinatesFloat $coordinates
+     * @return float
+     */
+    public function getDelta(McCoordinatesFloat $coordinates): float
+    {
+        $delta = 0;
+        $delta += abs($this->x - $coordinates->x);
+        $delta += abs($this->y - $coordinates->y);
+        $delta += abs($this->z - $coordinates->z);
+        return $delta / 3;
+    }
+
+    /**
+     * @param McCoordinatesFloat $coordinates
+     * @param float $delta
      * @return bool
      */
-    public function equals(McCoordinates $coordinates): bool
+    public function equals(McCoordinates $coordinates, float $delta = 0.0000000001): bool
     {
-        if ($coordinates instanceof McCoordinatesFloat) {
-            return parent::equals($coordinates) && $this->y === $coordinates->y;
-        }
-        return false;
+        return $this->getDelta($coordinates) <= $delta;
     }
+
+//    /**
+//     * @param McCoordinates $coordinates
+//     * @return bool
+//     */
+//    public function equals(McCoordinates $coordinates): bool
+//    {
+//        if ($coordinates instanceof McCoordinatesFloat) {
+//            return parent::equals($coordinates) && $this->y === $coordinates->y;
+//        }
+//        return false;
+//    }
+
 }

@@ -31,8 +31,8 @@ class McCoordinates3D extends McCoordinates2D
      */
     public function equals(McCoordinates $coordinates): bool
     {
-        if ($coordinates instanceof McCoordinates3D) {
-            return parent::equals($coordinates) && $this->y === $coordinates->y;
+        if (isset($coordinates->y)) {
+            return parent::equals($coordinates) && floatval($this->y) === floatval($coordinates->y);
         }
         return false;
     }

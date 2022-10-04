@@ -8,7 +8,7 @@ use Aternos\Nbt\Tag\StringTag;
 use Exception;
 use PHPUnit\Framework\TestCase;
 
-class PaletteBlockTest extends TestCase
+class PaletteBlockTest extends HawkTestCase
 {
 
     /**

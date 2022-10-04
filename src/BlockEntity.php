@@ -11,6 +11,8 @@ class BlockEntity
 {
     protected McCoordinates3D $coordinates;
 
+    protected string $name;
+
     protected CompoundTag $tag;
 
     /**
@@ -23,6 +25,7 @@ class BlockEntity
         }
         $this->coordinates = new McCoordinates3D($tag->getInt("x")->getValue(),$tag->getInt("y")->getValue(),$tag->getInt("z")->getValue());
         $this->tag = $tag;
+        $this->name = $this->tag["id"]->getValue();
     }
 
     /**
@@ -34,10 +37,26 @@ class BlockEntity
     }
 
     /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    /**
      * @return CompoundTag|ListTag
      */
     public function createTag(): CompoundTag|ListTag
     {
         return $this->tag;
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return $this->name . " at: " . $this->coordinates;
     }
 }

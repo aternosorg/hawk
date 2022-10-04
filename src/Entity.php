@@ -37,29 +37,6 @@ class Entity
     }
 
     /**
-     * @param McCoordinatesFloat $coordinates
-     * @param float $delta
-     * @return bool
-     */
-    public function equals(McCoordinatesFloat $coordinates, float $delta = 0.0000000001): bool
-    {
-        return $this->getDelta($coordinates) <= $delta;
-    }
-
-    /**
-     * @param McCoordinatesFloat $coordinates
-     * @return float
-     */
-    public function getDelta(McCoordinatesFloat $coordinates): float
-    {
-        $delta = 0;
-        $delta += abs($this->coordinates->x - $coordinates->x);
-        $delta += abs($this->coordinates->y - $coordinates->y);
-        $delta += abs($this->coordinates->z - $coordinates->z);
-        return $delta / 3;
-    }
-
-    /**
      * @return CompoundTag
      */
     public function createTag(): CompoundTag

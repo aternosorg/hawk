@@ -58,7 +58,7 @@ abstract class BlockChunk extends Chunk
         if ($sectionsTag !== null) {
             foreach ($sectionsTag as $sectionTag) {
                 $section = $this->newSectionFromTag($sectionTag, $this->coordinates, $this->version);
-                if($section !== null){
+                if ($section !== null) {
                     $this->sections[] = $section;
                 }
             }
@@ -135,19 +135,20 @@ abstract class BlockChunk extends Chunk
             $section = $this->addEmptySection($coordinates);
         }
         $section->replaceBlock($coordinates, $blockName);
-        $this->deleteBlockEntity($coordinates);
+        $blockEntities = $this->getBlockEntities($blockName, $coordinates);
+        foreach ($blockEntities as $blockEntity) {
+            $this->deleteBlockEntity($blockEntity);
+        }
     }
 
     /**
-     * Deletes block entity
-     *
-     * @param McCoordinates3D $coordinates
+     * @param BlockEntity $entity
      * @return void
      */
-    public function deleteBlockEntity(McCoordinates3D $coordinates): void
+    public function deleteBlockEntity(BlockEntity $entity): void
     {
         foreach ($this->blockEntities as $index => $blockEntity) {
-            if ($coordinates->equals($blockEntity->getCoordinates())) {
+            if ($blockEntity === $entity) {
                 unset($this->blockEntities[$index]);
                 return;
             }
@@ -187,7 +188,19 @@ abstract class BlockChunk extends Chunk
     /**
      * @return BlockEntity[]
      */
-    public function getBlockEntities(): array
+    public function getBlockEntities(string $name, McCoordinates $coordinates): array
+    {
+        $blockEntities = [];
+        foreach ($this->blockEntities as $blockEntity) {
+            $pos = $blockEntity->getCoordinates()->equals($coordinates);
+            if ($blockEntity->getName() === $name && $pos) {
+                $blockEntities[] = $blockEntity;
+            }
+        }
+        return $blockEntities;
+    }
+
+    public function getAllBlockEntities(): array
     {
         return $this->blockEntities;
     }
@@ -217,7 +230,7 @@ abstract class BlockChunk extends Chunk
         $this->tag->set($this->sectionsTagName, $this->createSectionsTag());
         $this->tag->set($this->blockEntitiesTagName, $this->createBlockEntitiesTag());
         $this->tag->set($this->entitiesTagName, $this->createEntitiesTag());
-        if($this->hasLevelTag){
+        if ($this->hasLevelTag) {
             $tag = new CompoundTag();
             $tag->set("Level", $this->tag);
             $tag->set("DataVersion", (new IntTag())->setValue($this->version));
@@ -240,6 +253,7 @@ abstract class BlockChunk extends Chunk
         }
         return $blockEntities;
     }
+
     /**
      * Creates "entities" tag
      *

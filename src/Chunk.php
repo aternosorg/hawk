@@ -236,7 +236,7 @@ abstract class Chunk
         // Filters entities by name for the while loop
         foreach ($this->entities as $entity) {
             if ($entity->getName() === $name) {
-                $entityDelta = $entity->getDelta($coordinates);
+                $entityDelta = $entity->getCoordinates()->getDelta($coordinates);
                 if ($entityDelta <= $delta) {
                     $found = true;
                     $results[] = $entity;
@@ -254,7 +254,7 @@ abstract class Chunk
         while ($counter < 13) {
             $results = [];
             foreach ($entities as $entity) {
-                if ($entity[1]->getDelta($coordinates) <= $delta) {
+                if ($entity[1]->getCoordinates()->getDelta($coordinates) <= $delta) {
                     $results[] = $entity[1];
                     $found = true;
                 }

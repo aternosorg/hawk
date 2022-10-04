@@ -68,6 +68,22 @@ class BlockRegion extends Region
     }
 
     /**
+     * @param string $name
+     * @param McCoordinatesFloat $coordinates
+     * @return array
+     * @throws Exception
+     */
+    public function getBlockEntities(string $name, McCoordinatesFloat $coordinates): array
+    {
+        $chunk = $this->getChunkFromBlock(McCoordinatesFloat::get3DCoordinates($coordinates));
+
+        if (!($chunk instanceof BlockChunk)) {
+            throw new Exception("Wrong chunk type");
+        }
+        return $chunk->getBlockEntities($name, $coordinates);
+    }
+
+    /**
      * @param McCoordinates3D $blockCoordinates
      * @return array
      * @throws Exception
@@ -81,12 +97,21 @@ class BlockRegion extends Region
         if(!VersionHelper::hasEntitiesTag($this->version)){
             throw new Exception("Entities not stored in block region");
         }
+        return $chunk->getAllEntities();
+    }
 
-        $entities = [];
-        foreach ($chunk->getAllEntities() as $entity) {
-            $entities[] = $entity;
+    /**
+     * @param McCoordinates3D $blockCoordinates
+     * @return array
+     * @throws Exception
+     */
+    public function getAllBlockEntitiesFromBlockChunk(McCoordinates3D $blockCoordinates): array
+    {
+        $chunk = $this->getChunkFromBlock($blockCoordinates);
+        if (!($chunk instanceof BlockChunk)) {
+            throw new Exception("Wrong chunk type");
         }
-        return $entities;
+        return $chunk->getAllBlockEntities();
     }
 
     /**
@@ -119,6 +144,21 @@ class BlockRegion extends Region
         $chunk = $this->getChunkFromBlock(McCoordinatesFloat::get3DCoordinates($entity->getCoordinates()));
         if ($chunk instanceof BlockChunk) {
             $chunk->deleteEntity($entity);
+            return;
+        }
+        throw new Exception("Wrong chunk type");
+    }
+
+    /**
+     * @param BlockEntity $entity
+     * @return void
+     * @throws Exception
+     */
+    public function deleteBlockEntity(BlockEntity $entity):void
+    {
+        $chunk = $this->getChunkFromBlock($entity->getCoordinates());
+        if ($chunk instanceof BlockChunk) {
+            $chunk->deleteBlockEntity($entity);
             return;
         }
         throw new Exception("Wrong chunk type");

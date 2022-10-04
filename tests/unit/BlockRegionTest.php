@@ -9,6 +9,15 @@ use Exception;
 
 class BlockRegionTest extends HawkTestCase
 {
+    protected function tearDown(): void
+    {
+        parent::tearDown();
+        foreach ($this->files as $index => $file) {
+            $file->close();
+            unset($this->files[$index]);
+        }
+    }
+
     /**
      * @dataProvider provideSingleBlockFile
      * @param File[] $blockFiles
@@ -21,6 +30,7 @@ class BlockRegionTest extends HawkTestCase
         $region = new BlockRegion($blockFiles[0]);
         $block = $region->getBlock($this->getBlockCoords());
         $this->assertInstanceOf(DataBlock::class, $block);
+        $this->closeFiles($blockFiles, $entitiesFiles);
     }
 
     /**
@@ -40,6 +50,7 @@ class BlockRegionTest extends HawkTestCase
         $block = $region->getBlock($this->getBlockCoords());
         $this->assertInstanceOf(DataBlock::class, $block);
         $this->assertEquals("minecraft:wool", $block->getPaletteBlock()->getName());
+        $this->closeFiles($blockFiles, $entitiesFiles);
     }
 
 
