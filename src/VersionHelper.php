@@ -22,6 +22,22 @@ class VersionHelper
 {
     private const VERSIONS = [
 
+        3218 => [
+            "name" => "1.19.3",
+            "class" => BlockChunkV3105::class,
+            "level" => false,
+            "entities" => false,
+        ],3120 => [
+            "name" => "1.19.2",
+            "class" => BlockChunkV3105::class,
+            "level" => false,
+            "entities" => false,
+        ],3117 => [
+            "name" => "1.19.1",
+            "class" => BlockChunkV3105::class,
+            "level" => false,
+            "entities" => false,
+        ],
         3105 => [
             "name" => "1.19",
             "class" => BlockChunkV3105::class,
