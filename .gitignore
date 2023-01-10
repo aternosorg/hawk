@@ -3,6 +3,5 @@ vendor/
 .idea/
 tests/files/
 create_versions_folder.php
-src/Versions/v1139
 src/Versions/v1241
 src/Versions/v1343

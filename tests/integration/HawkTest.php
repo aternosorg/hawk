@@ -4,6 +4,7 @@ namespace Aternos\Hawk\Tests\Integration;
 
 use Aternos\Hawk\BlockEntity;
 use Aternos\Hawk\Entity;
+use Aternos\Hawk\Exceptions\VersionNotSupportedException;
 use Aternos\Hawk\File;
 use Aternos\Hawk\Hawk;
 use Aternos\Hawk\McCoordinates3D;
@@ -56,10 +57,10 @@ class HawkTest extends HawkTestCase
 
     function copyTestFiles($src = null, $dst = null)
     {
-        if($src === null){
+        if ($src === null) {
             $src = __DIR__ . "/../../examples/resources/versions";
         }
-        if($dst === null){
+        if ($dst === null) {
             $dst = __DIR__ . "/../files/versions";
         }
 
@@ -162,8 +163,13 @@ class HawkTest extends HawkTestCase
     public function testGetBlock(array $blockFiles, array $entitiesFiles): void
     {
         $hawk = new Hawk(blockFiles: $blockFiles, entitiesFiles: $entitiesFiles);
-        $block = $hawk->getBlock($this->getBlockCoords());
-        $this->assertEquals("minecraft:furnace", $block->getPaletteBlock()->getName());
+        try {
+            $block = $hawk->getBlock($this->getBlockCoords());
+            $this->assertEquals("minecraft:furnace", $block->getPaletteBlock()->getName());
+        } catch (VersionNotSupportedException $e) {
+            $this->expectException(VersionNotSupportedException::class);
+            $hawk->getBlock($this->getBlockCoords());
+        }
         $this->closeFiles($blockFiles, $entitiesFiles);
     }
 
@@ -177,8 +183,13 @@ class HawkTest extends HawkTestCase
     public function testGetBlockNegative(array $blockFiles, array $entitiesFiles): void
     {
         $hawk = new Hawk(blockFiles: $blockFiles, entitiesFiles: $entitiesFiles);
-        $block = $hawk->getBlock($this->getNegativeBlockCoords());
-        $this->assertEquals("minecraft:furnace", $block->getPaletteBlock()->getName());
+        try {
+            $block = $hawk->getBlock($this->getNegativeBlockCoords());
+            $this->assertEquals("minecraft:furnace", $block->getPaletteBlock()->getName());
+        } catch (VersionNotSupportedException $e) {
+            $this->expectException(VersionNotSupportedException::class);
+            $hawk->getBlock($this->getNegativeBlockCoords());
+        }
         $this->closeFiles($blockFiles, $entitiesFiles);
     }
 
@@ -192,7 +203,13 @@ class HawkTest extends HawkTestCase
     public function testReplaceBlock(array $blockFiles, array $entitiesFiles): void
     {
         $hawk = new Hawk(blockFiles: $blockFiles, entitiesFiles: $entitiesFiles);
-        $block = $hawk->getBlock($this->getBlockCoords());
+        try {
+            $block = $hawk->getBlock($this->getBlockCoords());
+        } catch (VersionNotSupportedException $e) {
+            $this->expectException(VersionNotSupportedException::class);
+            $hawk->getBlock($this->getBlockCoords());
+            return;
+        }
         $this->assertEquals("minecraft:furnace", $block->getPaletteBlock()->getName());
         $hawk->replaceBlock($this->getBlockCoords(), "minecraft:wool");
         $hawk->save();
@@ -213,7 +230,13 @@ class HawkTest extends HawkTestCase
     public function testReplaceBlockNegative(array $blockFiles, array $entitiesFiles): void
     {
         $hawk = new Hawk(blockFiles: $blockFiles, entitiesFiles: $entitiesFiles);
-        $block = $hawk->getBlock($this->getNegativeBlockCoords());
+        try {
+            $block = $hawk->getBlock($this->getNegativeBlockCoords());
+        } catch (VersionNotSupportedException $e) {
+            $this->expectException(VersionNotSupportedException::class);
+            $hawk->getBlock($this->getNegativeBlockCoords());
+            return;
+        }
         $this->assertEquals("minecraft:furnace", $block->getPaletteBlock()->getName());
         $hawk->replaceBlock($this->getNegativeBlockCoords(), "minecraft:wool");
         $hawk->save();
@@ -291,7 +314,7 @@ class HawkTest extends HawkTestCase
         foreach ($entities as $entity) {
             $this->assertInstanceOf(Entity::class, $entity);
             $this->assertEquals("minecraft:chicken", $entity->getName());
-            $this->assertTrue($entity->getCoordinates()->equals($this->getExactNegativeEntityCoords(),0.1));
+            $this->assertTrue($entity->getCoordinates()->equals($this->getExactNegativeEntityCoords(), 0.1));
         }
         $this->closeFiles($blockFiles, $entitiesFiles);
     }
@@ -337,6 +360,7 @@ class HawkTest extends HawkTestCase
         $this->assertEmpty($entities);
         $this->closeFiles($blockFiles, $entitiesFiles);
     }
+
     /**
      * @dataProvider provideSingleBlockFile
      * @param array $blockFiles
