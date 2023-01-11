@@ -2,6 +2,7 @@
 
 namespace Aternos\Hawk;
 
+use Aternos\Hawk\Exceptions\VersionNotSupportedException;
 use Aternos\Nbt\IO\Writer\ZLibCompressedStringWriter;
 use Aternos\Nbt\NbtFormat;
 use Aternos\Nbt\Tag\CompoundTag;
@@ -44,8 +45,10 @@ abstract class BlockChunk extends Chunk
     {
         parent::__construct($location, $offset, $compressedDataLength, $compressionScheme, $tag, $coordinates, $version);
         $this->version = $version;
-        $this->loadSections();
         $this->loadBlockEntities();
+        if (VersionHelper::areBlocksSupported($this->version)) {
+            $this->loadSections();
+        }
     }
 
     /**
@@ -111,6 +114,9 @@ abstract class BlockChunk extends Chunk
      */
     public function getBlock(McCoordinates3D $coordinates): DataBlock
     {
+        if (!VersionHelper::areBlocksSupported($this->version)) {
+            throw new VersionNotSupportedException($this->version);
+        }
         $section = $this->getSection($coordinates);
         if ($section === null) {
             throw new Exception("No such section.");
@@ -130,6 +136,9 @@ abstract class BlockChunk extends Chunk
      */
     public function replaceBlock(McCoordinates3D $coordinates, string $blockName = "minecraft:stone"): void
     {
+        if (!VersionHelper::areBlocksSupported($this->version)) {
+            throw new VersionNotSupportedException($this->version);
+        }
         $section = $this->getSection($coordinates);
         if ($section === null) {
             $section = $this->addEmptySection($coordinates);

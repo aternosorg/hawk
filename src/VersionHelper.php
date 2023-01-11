@@ -4,6 +4,7 @@ namespace Aternos\Hawk;
 
 
 use Aternos\Hawk\Exceptions\VersionNotSupportedException;
+use Aternos\Hawk\Versions\v1139\BlockChunkV1139;
 use Aternos\Hawk\Versions\v2566\BlockChunkV2566;
 use Aternos\Hawk\Versions\v2567\BlockChunkV2567;
 use Aternos\Hawk\Versions\v2578\BlockChunkV2578;
@@ -20,19 +21,22 @@ use Exception;
 
 class VersionHelper
 {
-    private const VERSIONS = [
+    private const BLOCK_SUPPORT = 2566;
+    private const DATA_VERSIONS = [
 
         3218 => [
             "name" => "1.19.3",
             "class" => BlockChunkV3105::class,
             "level" => false,
             "entities" => false,
-        ],3120 => [
+        ],
+        3120 => [
             "name" => "1.19.2",
             "class" => BlockChunkV3105::class,
             "level" => false,
             "entities" => false,
-        ],3117 => [
+        ],
+        3117 => [
             "name" => "1.19.1",
             "class" => BlockChunkV3105::class,
             "level" => false,
@@ -110,11 +114,81 @@ class VersionHelper
             "level" => true,
             "entities" => true,
         ],
-
-        /* Unsupported
+        2230 => [
+            "name" => "1.15.2",
+            "class" => BlockChunkV1139::class,
+            "level" => true,
+            "entities" => true,
+        ],
+        2227 => [
+            "name" => "1.15.1",
+            "class" => BlockChunkV1139::class,
+            "level" => true,
+            "entities" => true,
+        ],
+        2225 => [
+            "name" => "1.15",
+            "class" => BlockChunkV1139::class,
+            "level" => true,
+            "entities" => true,
+        ],
+        1976 => [
+            "name" => "1.14.4",
+            "class" => BlockChunkV1139::class,
+            "level" => true,
+            "entities" => true,
+        ],
+        1968 => [
+            "name" => "1.14.3",
+            "class" => BlockChunkV1139::class,
+            "level" => true,
+            "entities" => true,
+        ],
+        1963 => [
+            "name" => "1.14.2",
+            "class" => BlockChunkV1139::class,
+            "level" => true,
+            "entities" => true,
+        ],
+        1957 => [
+            "name" => "1.14.1",
+            "class" => BlockChunkV1139::class,
+            "level" => true,
+            "entities" => true,
+        ],
+        1952 => [
+            "name" => "1.14",
+            "class" => BlockChunkV1139::class,
+            "level" => true,
+            "entities" => true,
+        ],
+        1631 => [
+            "name" => "1.13.2",
+            "class" => BlockChunkV1139::class,
+            "level" => true,
+            "entities" => true,
+        ],
+        1628 => [
+            "name" => "1.13.1",
+            "class" => BlockChunkV1139::class,
+            "level" => true,
+            "entities" => true,
+        ],
+        1519 => [
+            "name" => "1.13",
+            "class" => BlockChunkV1139::class,
+            "level" => true,
+            "entities" => true,
+        ],
         1343 => [
             "name" => "1.12.2",
-            "class" => BlockChunkV1343::class,
+            "class" => BlockChunkV1139::class,
+            "level" => true,
+            "entities" => true,
+        ],
+        1241 => [
+            "name" => "1.12.1",
+            "class" => BlockChunkV1139::class,
             "level" => true,
             "entities" => true,
         ],
@@ -123,51 +197,68 @@ class VersionHelper
             "class" => BlockChunkV1139::class,
             "level" => true,
             "entities" => true,
-        ],*/
+        ],
     ];
 
     /**
-     * @param int $version
-     * @return void
+     * @param int $dataVersion
+     * @return int
      * @throws Exception
      */
-    protected static function versionSupported(int $version): void
+    protected static function getSupportedVersion(int $dataVersion): int
     {
-        if (!array_key_exists($version, static::VERSIONS)) {
-            throw new VersionNotSupportedException(static::VERSIONS[$version]["name"]);
+        if (array_key_exists($dataVersion, static::DATA_VERSIONS)) {
+            return $dataVersion;
         }
+        $latest = max(array_keys(static::DATA_VERSIONS));
+        if ($dataVersion > $latest) {
+            return $latest;
+        }
+        throw new VersionNotSupportedException(static::DATA_VERSIONS[$dataVersion]["name"]);
     }
 
     /**
-     * @param int $version
+     * @param int $dataVersion
+     * @return bool
+     */
+    public static function areBlocksSupported(int $dataVersion): bool
+    {
+        if ($dataVersion >= self::BLOCK_SUPPORT) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @param int $dataVersion
      * @return string
      * @throws Exception
      */
-    public static function getChunkClassFromVersion(int $version): string
+    public static function getChunkClassFromVersion(int $dataVersion): string
     {
-        self::versionSupported($version);
-        return static::VERSIONS[$version]["class"];
+        $dataVersion = self::getSupportedVersion($dataVersion);
+        return static::DATA_VERSIONS[$dataVersion]["class"];
     }
 
     /**
-     * @param int $version
+     * @param int $dataVersion
      * @return bool
      * @throws Exception
      */
-    public static function hasLevelTag(int $version): bool
+    public static function hasLevelTag(int $dataVersion): bool
     {
-        self::versionSupported($version);
-        return static::VERSIONS[$version]["level"];
+        $dataVersion = self::getSupportedVersion($dataVersion);
+        return static::DATA_VERSIONS[$dataVersion]["level"];
     }
 
     /**
-     * @param int $version
+     * @param int $dataVersion
      * @return bool
      * @throws Exception
      */
-    public static function hasEntitiesTag(int $version): bool
+    public static function hasEntitiesTag(int $dataVersion): bool
     {
-        self::versionSupported($version);
-        return static::VERSIONS[$version]["entities"];
+        $dataVersion = self::getSupportedVersion($dataVersion);
+        return static::DATA_VERSIONS[$dataVersion]["entities"];
     }
 }
