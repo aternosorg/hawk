@@ -5,7 +5,10 @@
 Hawk is a PHP library to get and/or replace blocks and get and/or delete entities in Minecraft region files.
 This allows the user to replace blocks or delete entities that will crash the server when loaded.
 
-Currently, only the Minecraft Anvil world format (Minecraft Java Edition Version 1.16+) is supported.
+Currently, following versions are supported:
+
+    1.12+ for entities
+    1.16+ for blocks
 
 ### Installation
 
@@ -43,7 +46,7 @@ $blockPos = new McCoordinates3D(1, 2, 3);
 
 // Path to your region file and calculating the filename from the coordinates
 $inputPath = "/your/world/region/directory";
-$blockFiles[] = new File($inputPath . "/" . Region::getRegionFileNameFromBlock($blockPos);
+$blockFiles[] = new File($inputPath . "/" . Region::getRegionFileNameFromBlock($blockPos));
 
 // Instantiating Hawk only with blockFiles
 $hawk = new Hawk(blockFiles: $blockFiles);
@@ -57,7 +60,7 @@ $entityPos = new McCoordinatesFloat(1.2, 2.3, 3.4);
 
 // Path to your region file and calculating the filename from the coordinates
 $inputPath = "/your/world/region/directory";
-$entitiesFiles[] = new File($inputPath . "/" . Region::getRegionFileNameFromBlock(McCoordinatesFloat::get3DCoordinates($entityPos));
+$entitiesFiles[] = new File($inputPath . "/" . Region::getRegionFileNameFromBlock(McCoordinatesFloat::get3DCoordinates($entityPos)));
 
 // Instantiating Hawk only with blockFiles because entities used to be in the same file
 $hawk = new Hawk(blockFiles: $entitiesFiles);
@@ -68,7 +71,7 @@ Setup for entities starting from 1.17:
 ```php
 // Path to your entities directory and calculating the filename from the coordinates
 $inputPath = "/your/world/entities/directory";
-$entitiesFiles[] = new File($inputPath . "/" . Region::getRegionFileNameFromBlock(McCoordinatesFloat::get3DCoordinates($entityPos));
+$entitiesFiles[] = new File($inputPath . "/" . Region::getRegionFileNameFromBlock(McCoordinatesFloat::get3DCoordinates($entityPos)));
 
 $hawk = new Hawk(entitiesFiles: $entitiesFiles);
 ```
