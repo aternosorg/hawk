@@ -141,16 +141,18 @@ class HawkTestCase extends TestCase
         foreach ($versions as $version) {
             if (!$version->isDot()) {
                 $dirName = $version->getFilename();
-                $versionName = explode("(", $dirName)[0];
-                $major = explode(".", $versionName)[1];
+                $major = null;
+                if (str_contains($dirName, ".")) {
+                    $major = explode(".", $dirName)[1];
+                }
                 $regionFile = new File(__DIR__ . "/../../examples/resources/versions/" . $dirName . "/region/r.0.0.mca");
                 $this->files[] = $regionFile;
                 $entityFile = null;
-                if ($major > 16) {
+                if ($major > 16 || $dirName === "latest") {
                     $entityFile = new File(__DIR__ . "/../../examples/resources/versions/" . $dirName . "/entities/r.0.0.mca");
                     $this->files[] = $entityFile;
                 }
-                $blockFiles[$versionName] = [
+                $blockFiles[$dirName] = [
                     [$regionFile],
                     $entityFile !== null ? [$entityFile] : []
                 ];
@@ -170,16 +172,18 @@ class HawkTestCase extends TestCase
         foreach ($versions as $version) {
             if (!$version->isDot()) {
                 $dirName = $version->getFilename();
-                $versionName = explode("(", $dirName)[0];
-                $major = explode(".", $versionName)[1];
+                $major = null;
+                if (str_contains($dirName, ".")) {
+                    $major = explode(".", $dirName)[1];
+                }
                 $regionFile = new File(__DIR__ . "/../../examples/resources/versions/" . $dirName . "/region/r.-1.-1.mca");
                 $this->files[] = $regionFile;
                 $entityFile = null;
-                if ($major > 16) {
+                if ($major > 16 || $dirName === "latest") {
                     $entityFile = new File(__DIR__ . "/../../examples/resources/versions/" . $dirName . "/entities/r.-1.-1.mca");
                     $this->files[] = $entityFile;
                 }
-                $blockFiles[$versionName] = [
+                $blockFiles[$dirName] = [
                     [$regionFile],
                     $entityFile !== null ? [$entityFile] : []
                 ];
@@ -195,24 +199,26 @@ class HawkTestCase extends TestCase
         foreach ($versions as $version) {
             if (!$version->isDot()) {
                 $dirName = $version->getFilename();
-                $versionName = explode("(", $dirName)[0];
-                $major = explode(".", $versionName)[1];
-                $blockFiles[$versionName] = [];
+                $major = null;
+                if (str_contains($dirName, ".")) {
+                    $major = explode(".", $dirName)[1];
+                }
+                $blockFiles[$dirName] = [];
                 $regionFile = new File(__DIR__ . "/../../examples/resources/versions/" . $dirName . "/region/r.0.0.mca");
                 $regionFileTwo = new File(__DIR__ . "/../../examples/resources/versions/" . $dirName . "/region/r.-1.-1.mca");
-                $blockFiles[$versionName][] = [$regionFile, $regionFileTwo];
+                $blockFiles[$dirName][] = [$regionFile, $regionFileTwo];
                 $this->files[] = $regionFile;
                 $this->files[] = $regionFileTwo;
                 $entityFile = null;
                 $entityFileTwo = null;
-                if ($major > 16) {
+                if ($major > 16 || $dirName === "latest") {
                     $entityFile = new File(__DIR__ . "/../../examples/resources/versions/" . $dirName . "/entities/r.0.0.mca");
                     $entityFileTwo = new File(__DIR__ . "/../../examples/resources/versions/" . $dirName . "/entities/r.-1.-1.mca");
-                    $blockFiles[$versionName][] = [$entityFile, $entityFileTwo];
+                    $blockFiles[$dirName][] = [$entityFile, $entityFileTwo];
                     $this->files[] = $entityFile;
                     $this->files[] = $entityFileTwo;
                 } else {
-                    $blockFiles[$versionName][] = [];
+                    $blockFiles[$dirName][] = [];
                 }
             }
         }
@@ -226,24 +232,26 @@ class HawkTestCase extends TestCase
         foreach ($versions as $version) {
             if (!$version->isDot()) {
                 $dirName = $version->getFilename();
-                $versionName = explode("(", $dirName)[0];
-                $major = explode(".", $versionName)[1];
-                $blockFiles[$versionName] = [];
+                $major = null;
+                if (str_contains($dirName, ".")) {
+                    $major = explode(".", $dirName)[1];
+                }
+                $blockFiles[$dirName] = [];
                 $regionFile = new File(__DIR__ . "/../../examples/resources/versions/" . $dirName . "/region/r.0.0.mca");
                 $regionFileTwo = new File(__DIR__ . "/../../examples/resources/versions/" . $dirName . "/region/r.0.0.mca");
-                $blockFiles[$versionName][] = [$regionFile, $regionFileTwo];
+                $blockFiles[$dirName][] = [$regionFile, $regionFileTwo];
                 $this->files[] = $regionFile;
                 $this->files[] = $regionFileTwo;
                 $entityFile = null;
                 $entityFileTwo = null;
-                if ($major > 16) {
+                if ($major > 16 || $dirName === "latest") {
                     $entityFile = new File(__DIR__ . "/../../examples/resources/versions/" . $dirName . "/entities/r.0.0.mca");
                     $entityFileTwo = new File(__DIR__ . "/../../examples/resources/versions/" . $dirName . "/entities/r.0.0.mca");
-                    $blockFiles[$versionName][] = [$entityFile, $entityFileTwo];
+                    $blockFiles[$dirName][] = [$entityFile, $entityFileTwo];
                     $this->files[] = $entityFile;
                     $this->files[] = $entityFileTwo;
                 } else {
-                    $blockFiles[$versionName][] = [];
+                    $blockFiles[$dirName][] = [];
                 }
             }
         }
