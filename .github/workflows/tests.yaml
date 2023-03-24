@@ -1,22 +1,110 @@
 name: Tests
-
+run-name: Testing
 on:
-  pull_request:
   push:
+    branches:
+      - master
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      IS_RELEASE:
+        required: true
+        type: boolean
+      VERSION:
+        required: true
 
+env:
+  VERSIONS_LOCATION: "examples/resources/versions/"
 jobs:
+
+  is-in-repo:
+    runs-on: ubuntu-latest
+    permissions: read-all
+
+    outputs:
+      isInRepo: ${{ steps.save-var.outputs.IS_IN_REPO }}
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+      - name: Check for latest
+        id: save-var
+        run: |
+          if [[ -e "${{ env.VERSIONS_LOCATION }}${{ github.event.inputs.VERSION }}" ]]; then echo "IS_IN_REPO=true" >> $GITHUB_OUTPUT; else echo "IS_IN_REPO=false" >> $GITHUB_OUTPUT; fi
+      - name: Is latest in repo?
+        run: echo "${{ steps.save-var.outputs.IS_IN_REPO }}"
+
+  create-world:
+    runs-on: ubuntu-latest
+    permissions: write-all
+    needs:
+      - is-in-repo
+    if: ${{ github.event.inputs.VERSION != null && github.event.inputs.IS_RELEASE != null && needs.is-in-repo.outputs.isInRepo == 'false' }}
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+        with:
+          ref: master
+
+      - name: Get last version
+        run: echo "LAST_VERSION=$(curl -sSL "https://piston-meta.mojang.com/mc/game/version_manifest.json" | jq -cr '[.versions[] | select(.type == "release")] [1] .id')" >> $GITHUB_ENV
+
+      - name: Delete latest version folder
+        run: rm -r ${{ env.VERSIONS_LOCATION }}latest
+
+      - name: Copy last version into latest folder
+        run: cp -R ${{ env.VERSIONS_LOCATION }}${{ env.LAST_VERSION }} ${{ env.VERSIONS_LOCATION }}latest
+
+      - name: Start server
+        run: docker run --ip 172.17.0.2 --name mc -e EULA=TRUE -e UID="$(id -u)" -e VERSION=${{ github.event.inputs.VERSION }} -e ENABLE_AUTOSTOP=TRUE -e AUTOSTOP_TIMEOUT_INIT=5 -e MEMORY=8G -v "$GITHUB_WORKSPACE"/${{ env.VERSIONS_LOCATION }}latest itzg/minecraft-server:latest --forceUpgrade
+
+      - name: Copy upgraded world into version folder
+        run: cp -R ${{ env.VERSIONS_LOCATION }}latest ${{ env.VERSIONS_LOCATION }}${{ github.event.inputs.VERSION }}
+
+      - if: ${{ github.event.inputs.IS_RELEASE == 'true' }}
+        name: Committing to master
+        uses: EndBug/add-and-commit@v9
+        with:
+          add: './${{ env.VERSIONS_LOCATION }}${{ github.event.inputs.VERSION }}/*'
+          message: 'add latest Minecraft world'
+          push: true
+
+      - if: ${{ github.event.inputs.IS_RELEASE == 'false' }}
+        name: Committing to snapshots
+        uses: EndBug/add-and-commit@v9
+        with:
+          add: './${{ env.VERSIONS_LOCATION }}${{ github.event.inputs.VERSION }}/*'
+          new_branch: snapshots
+          message: 'add latest Minecraft world'
+          push: true
+
   tests:
     runs-on: ubuntu-latest
+    needs:
+      - create-world
 
     strategy:
       matrix:
-        php-version: [ '8.0', '8.1' ]
+        php-version: [ '8.0', '8.1', '8.2' ]
 
     name: Run tests on PHP v${{ matrix.php-version }}
 
+    if: always()
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - if: ${{ github.event.inputs.IS_RELEASE == 'true' || github.event.inputs.IS_RELEASE == null }}
+        name: Checkout master
+        uses: actions/checkout@v3
+        with:
+          ref: master
+
+      - if: ${{ github.event.inputs.IS_RELEASE == 'false' }}
+        name: Checkout snapshots
+        uses: actions/checkout@v3
+        with:
+          ref: snapshots
+
+      - name: Show resource folder
+        run: tree ${{ env.VERSIONS_LOCATION }}
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -25,17 +113,35 @@ jobs:
 
       - name: Set composer cache directory
         id: composer-cache
-        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
 
       - name: Restore composer from cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
           restore-keys: ${{ runner.os }}-composer-
+
+      - name: Update composer
+        run: composer update
 
       - name: Install composer dependencies
         run: composer install --no-interaction --prefer-dist --no-progress
 
       - name: Run phpunit tests
         run: vendor/bin/phpunit --colors=always --testdox
+
+  delete-snapshot-branch:
+    runs-on: ubuntu-latest
+    permissions: write-all
+    needs:
+      - tests
+    if: ${{ always() && github.event.inputs.IS_RELEASE != null && github.event.inputs.IS_RELEASE == 'false' }}
+    steps:
+      - name: Checkout snapshots
+        uses: actions/checkout@v3
+        with:
+          ref: snapshots
+
+      - name: Delete snapshot branch
+        run: git push origin --delete snapshots
