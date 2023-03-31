@@ -48,7 +48,7 @@ jobs:
         run: echo "LAST_VERSION=$(curl -sSL "https://piston-meta.mojang.com/mc/game/version_manifest.json" | jq -cr '[.versions[] | select(.type == "release")] [1] .id')" >> $GITHUB_ENV
 
       - name: Delete latest version folder
-        run: rm -r ${{ env.VERSIONS_LOCATION }}latest
+        run: rm -rf ${{ env.VERSIONS_LOCATION }}latest
 
       - name: Copy last version into latest folder
         run: cp -R ${{ env.VERSIONS_LOCATION }}${{ env.LAST_VERSION }} ${{ env.VERSIONS_LOCATION }}latest
