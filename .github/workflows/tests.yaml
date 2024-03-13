@@ -121,8 +121,8 @@ jobs:
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
           restore-keys: ${{ runner.os }}-composer-
 
-      - name: Update composer
-        run: composer update
+      #- name: Update composer
+      #  run: composer update
 
       - name: Install composer dependencies
         run: composer install --no-interaction --prefer-dist --no-progress
