@@ -24,7 +24,7 @@ jobs:
       isInRepo: ${{ steps.save-var.outputs.IS_IN_REPO }}
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Check for latest
         id: save-var
         run: |
@@ -40,7 +40,7 @@ jobs:
     if: ${{ github.event.inputs.VERSION != null && github.event.inputs.IS_RELEASE != null && needs.is-in-repo.outputs.isInRepo == 'false' }}
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: master
 
@@ -92,13 +92,13 @@ jobs:
     steps:
       - if: ${{ github.event.inputs.IS_RELEASE == 'true' || github.event.inputs.IS_RELEASE == null }}
         name: Checkout master
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: master
 
       - if: ${{ github.event.inputs.IS_RELEASE == 'false' }}
         name: Checkout snapshots
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: snapshots
 
@@ -138,7 +138,7 @@ jobs:
     if: ${{ always() && github.event.inputs.IS_RELEASE != null && github.event.inputs.IS_RELEASE == 'false' }}
     steps:
       - name: Checkout snapshots
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: snapshots
 
