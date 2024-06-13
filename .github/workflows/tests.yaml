@@ -54,7 +54,7 @@ jobs:
         run: cp -R ${{ env.VERSIONS_LOCATION }}${{ env.LAST_VERSION }} ${{ env.VERSIONS_LOCATION }}latest
 
       - name: Start server
-        run: docker run --ip 172.17.0.2 --name mc -e EULA=TRUE -e UID="$(id -u)" -e VERSION=${{ github.event.inputs.VERSION }} -e ENABLE_AUTOSTOP=TRUE -e AUTOSTOP_TIMEOUT_INIT=5 -e MEMORY=8G -v "$GITHUB_WORKSPACE"/${{ env.VERSIONS_LOCATION }}latest itzg/minecraft-server:latest --forceUpgrade
+        run: docker run --name mc -e EULA=TRUE -e UID="$(id -u)" -e VERSION=${{ github.event.inputs.VERSION }} -e ENABLE_AUTOSTOP=TRUE -e AUTOSTOP_TIMEOUT_INIT=5 -e MEMORY=8G -v "$GITHUB_WORKSPACE"/${{ env.VERSIONS_LOCATION }}latest itzg/minecraft-server:latest --forceUpgrade
 
       - name: Copy upgraded world into version folder
         run: cp -R ${{ env.VERSIONS_LOCATION }}latest ${{ env.VERSIONS_LOCATION }}${{ github.event.inputs.VERSION }}
