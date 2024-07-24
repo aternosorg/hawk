@@ -12,7 +12,7 @@ abstract class Section
 
     protected int $version;
 
-    protected Tag $tag;
+    protected CompoundTag $tag;
 
     protected McCoordinates3D $coordinates;
 

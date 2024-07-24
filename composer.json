@@ -15,7 +15,7 @@
         "aternos/nbt": ">=1.4"
     },
     "require-dev": {
-        "phpunit/phpunit": "^9.0"
+        "phpunit/phpunit": "<10.0"
     },
     "autoload": {
         "psr-4": {

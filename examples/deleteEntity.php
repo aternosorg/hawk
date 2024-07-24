@@ -61,7 +61,8 @@ $hawk = new Hawk($blockFiles, $entitiesFiles);
 $entities = $hawk->getEntities($entityName, $entityPos);
 switch (count($entities)) {
     case 0:
-        throw new Exception("How did you get here?");
+        echo "Entity not found " . PHP_EOL;
+        return;
     case 1:
         $hawk->deleteEntity($entities[0]);
         echo "1 entity deleted " . PHP_EOL;

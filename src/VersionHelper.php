@@ -214,6 +214,9 @@ class VersionHelper
         if ($dataVersion > $latest) {
             return $latest;
         }
+        if ($dataVersion < 1139) {
+            return 1139;
+        }
         throw new VersionNotSupportedException(static::DATA_VERSIONS[$dataVersion]["name"]);
     }
 

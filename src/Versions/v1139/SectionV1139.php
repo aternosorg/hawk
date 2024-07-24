@@ -60,11 +60,11 @@ class SectionV1139 extends Section
         $section->version = $version;
         $section->coordinates = new McCoordinates3D($coordinates->x, $tag->getByte("Y")->getValue(), $coordinates->z);
         $paletteTag = $tag->getList($section->paletteTagName);
-        if ($paletteTag === null) {
-            return null;
-        }
-        $section->palette = $section->newPaletteFromTag($paletteTag);
-        $section->data = $section->newDataFromTag($section, $tag, $section->coordinates->y);
+//        if ($paletteTag === null) {
+//            return null;
+//        }
+//        $section->palette = $section->newPaletteFromTag($paletteTag);
+//        $section->data = $section->newDataFromTag($section, $tag, $section->coordinates->y);
         return $section;
     }
 
@@ -137,6 +137,9 @@ class SectionV1139 extends Section
     {
         $section = new CompoundTag();
         $section->set("Y", (new ByteTag())->setValue($this->coordinates->y));
+        if(!isset($this->data)) {
+            return $this->tag;
+        }
         $section->set($this->dataTagName, $this->data->createTag($this->getPalette()->getLength(), $this->coordinates->y));
         $section->set($this->paletteTagName, $this->palette->createTag());
         return $section;

@@ -46,9 +46,9 @@ abstract class BlockChunk extends Chunk
         parent::__construct($location, $offset, $compressedDataLength, $compressionScheme, $tag, $coordinates, $version);
         $this->version = $version;
         $this->loadBlockEntities();
-        if (VersionHelper::areBlocksSupported($this->version)) {
-            $this->loadSections();
-        }
+        $this->loadSections();
+//        if (VersionHelper::areBlocksSupported($this->version)) {
+//        }
     }
 
     /**
@@ -60,6 +60,7 @@ abstract class BlockChunk extends Chunk
         $sectionsTag = $this->readSectionsTag();
         if ($sectionsTag !== null) {
             foreach ($sectionsTag as $sectionTag) {
+
                 $section = $this->newSectionFromTag($sectionTag, $this->coordinates, $this->version);
                 if ($section !== null) {
                     $this->sections[] = $section;
