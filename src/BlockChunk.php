@@ -47,8 +47,6 @@ abstract class BlockChunk extends Chunk
         $this->version = $version;
         $this->loadBlockEntities();
         $this->loadSections();
-//        if (VersionHelper::areBlocksSupported($this->version)) {
-//        }
     }
 
     /**

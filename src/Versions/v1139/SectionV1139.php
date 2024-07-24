@@ -59,12 +59,6 @@ class SectionV1139 extends Section
         $section->tag = $tag;
         $section->version = $version;
         $section->coordinates = new McCoordinates3D($coordinates->x, $tag->getByte("Y")->getValue(), $coordinates->z);
-        $paletteTag = $tag->getList($section->paletteTagName);
-//        if ($paletteTag === null) {
-//            return null;
-//        }
-//        $section->palette = $section->newPaletteFromTag($paletteTag);
-//        $section->data = $section->newDataFromTag($section, $tag, $section->coordinates->y);
         return $section;
     }
 
