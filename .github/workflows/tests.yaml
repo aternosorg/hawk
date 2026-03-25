@@ -54,7 +54,7 @@ jobs:
         run: docker run --rm --name mc -e EULA=TRUE -e UID="$(id -u)" -e VERSION=${{ github.event.inputs.VERSION }} -e ENABLE_AUTOSTOP=TRUE -e AUTOSTOP_TIMEOUT_INIT=5 -e MEMORY=8G -v ./server:/data itzg/minecraft-server:latest --forceUpgrade
 
       - name: Copy old regions into server
-        run:  /bin/cp -rf ${{ env.VERSIONS_LOCATION }}${{ env.PREVIOUS_VERSION }}region server/world/dimensions/minecraft/overworld
+        run:  /bin/cp -rf ${{ env.VERSIONS_LOCATION }}${{ env.PREVIOUS_VERSION }}/region server/world/dimensions/minecraft/overworld
 
       - name: Copy old entities into server
         run:  /bin/cp -rf ${{ env.VERSIONS_LOCATION }}${{ env.PREVIOUS_VERSION }}/entities server/world/dimensions/minecraft/overworld
