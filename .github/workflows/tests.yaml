@@ -25,10 +25,12 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v6
+
       - name: Check for latest
         id: save-var
         run: |
           if [[ -e "${{ env.VERSIONS_LOCATION }}${{ github.event.inputs.VERSION }}" ]]; then echo "IS_IN_REPO=true" >> $GITHUB_OUTPUT; else echo "IS_IN_REPO=false" >> $GITHUB_OUTPUT; fi
+
       - name: Is latest in repo?
         run: echo "${{ steps.save-var.outputs.IS_IN_REPO }}"
 
@@ -98,15 +100,8 @@ jobs:
     if: always()
 
     steps:
-      - if: ${{ github.event.inputs.IS_RELEASE == 'true' || github.event.inputs.IS_RELEASE == null }}
-        name: Checkout master
+      - name: Checkout repo
         uses: actions/checkout@v6
-
-      - if: ${{ github.event.inputs.IS_RELEASE == 'false' }}
-        name: Checkout snapshots
-        uses: actions/checkout@v6
-        with:
-          ref: snapshots
 
       - name: Show resource folder
         run: tree ${{ env.VERSIONS_LOCATION }}
