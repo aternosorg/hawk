@@ -24,11 +24,13 @@ jobs:
       isInRepo: ${{ steps.save-var.outputs.IS_IN_REPO }}
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
+
       - name: Check for latest
         id: save-var
         run: |
           if [[ -e "${{ env.VERSIONS_LOCATION }}${{ github.event.inputs.VERSION }}" ]]; then echo "IS_IN_REPO=true" >> $GITHUB_OUTPUT; else echo "IS_IN_REPO=false" >> $GITHUB_OUTPUT; fi
+
       - name: Is latest in repo?
         run: echo "${{ steps.save-var.outputs.IS_IN_REPO }}"
 
@@ -40,38 +42,49 @@ jobs:
     if: ${{ github.event.inputs.VERSION != null && github.event.inputs.IS_RELEASE != null && needs.is-in-repo.outputs.isInRepo == 'false' }}
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v4
-        with:
-          ref: master
+        uses: actions/checkout@v6
 
-      - name: Get last version
-        run: echo "LAST_VERSION=$(curl -sSL "https://piston-meta.mojang.com/mc/game/version_manifest.json" | jq -cr '[.versions[] | select(.type == "release")] [1] .id')" >> $GITHUB_ENV
+      - name: Create server folder
+        run: mkdir server
 
-      - name: Delete latest version folder
-        run: rm -rf ${{ env.VERSIONS_LOCATION }}latest
+      - name: Get previous version
+        run: echo "PREVIOUS_VERSION=$(curl -sSL "https://piston-meta.mojang.com/mc/game/version_manifest.json" | jq -cr '[.versions[] | select(.type == "release")] [1] .id')" >> $GITHUB_ENV
 
-      - name: Copy last version into latest folder
-        run: cp -R ${{ env.VERSIONS_LOCATION }}${{ env.LAST_VERSION }} ${{ env.VERSIONS_LOCATION }}latest
+      - name: Start server for world creation
+        run: docker run --rm --name mc -e EULA=TRUE -e UID="$(id -u)" -e VERSION=${{ github.event.inputs.VERSION }} -e ENABLE_AUTOSTOP=TRUE -e AUTOSTOP_TIMEOUT_INIT=5 -e MEMORY=8G -v ./server:/data itzg/minecraft-server:latest --forceUpgrade
 
-      - name: Start server
-        run: docker run --name mc -e EULA=TRUE -e UID="$(id -u)" -e VERSION=${{ github.event.inputs.VERSION }} -e ENABLE_AUTOSTOP=TRUE -e AUTOSTOP_TIMEOUT_INIT=5 -e MEMORY=8G -v "$GITHUB_WORKSPACE"/${{ env.VERSIONS_LOCATION }}latest itzg/minecraft-server:latest --forceUpgrade
+      - name: Copy old regions into server
+        run:  /bin/cp -rf ${{ env.VERSIONS_LOCATION }}${{ env.PREVIOUS_VERSION }}/region server/world/dimensions/minecraft/overworld
 
-      - name: Copy upgraded world into version folder
-        run: cp -R ${{ env.VERSIONS_LOCATION }}latest ${{ env.VERSIONS_LOCATION }}${{ github.event.inputs.VERSION }}
+      - name: Copy old entities into server
+        run:  /bin/cp -rf ${{ env.VERSIONS_LOCATION }}${{ env.PREVIOUS_VERSION }}/entities server/world/dimensions/minecraft/overworld
+
+      - name: Start server for upgrade
+        run: docker run --rm --name mc -e EULA=TRUE -e UID="$(id -u)" -e VERSION=${{ github.event.inputs.VERSION }} -e ENABLE_AUTOSTOP=TRUE -e AUTOSTOP_TIMEOUT_INIT=5 -e MEMORY=8G -v ./server:/data itzg/minecraft-server:latest --forceUpgrade
+
+      - name: Create latest version folder
+        run: mkdir ${{ env.VERSIONS_LOCATION }}${{ github.event.inputs.VERSION }}
+
+      - name: Copy upgraded regions into version folder
+        run: /bin/cp -rf server/world/dimensions/minecraft/overworld/region ${{ env.VERSIONS_LOCATION }}${{ github.event.inputs.VERSION }}
+
+      - name: Copy upgraded entities into version folder
+        run: /bin/cp -rf server/world/dimensions/minecraft/overworld/entities ${{ env.VERSIONS_LOCATION }}${{ github.event.inputs.VERSION }}
+
+      - name: Delete server folder
+        run: rm -rf server
 
       - if: ${{ github.event.inputs.IS_RELEASE == 'true' }}
         name: Committing to master
-        uses: EndBug/add-and-commit@v9
+        uses: EndBug/add-and-commit@v10
         with:
-          add: './${{ env.VERSIONS_LOCATION }}${{ github.event.inputs.VERSION }}/*'
           message: 'add latest Minecraft world'
           push: true
 
       - if: ${{ github.event.inputs.IS_RELEASE == 'false' }}
         name: Committing to snapshots
-        uses: EndBug/add-and-commit@v9
+        uses: EndBug/add-and-commit@v10
         with:
-          add: './${{ env.VERSIONS_LOCATION }}${{ github.event.inputs.VERSION }}/*'
           new_branch: snapshots
           message: 'add latest Minecraft world'
           push: true
@@ -90,17 +103,8 @@ jobs:
     if: always()
 
     steps:
-      - if: ${{ github.event.inputs.IS_RELEASE == 'true' || github.event.inputs.IS_RELEASE == null }}
-        name: Checkout master
-        uses: actions/checkout@v4
-        with:
-          ref: master
-
-      - if: ${{ github.event.inputs.IS_RELEASE == 'false' }}
-        name: Checkout snapshots
-        uses: actions/checkout@v4
-        with:
-          ref: snapshots
+      - name: Checkout repo
+        uses: actions/checkout@v6
 
       - name: Show resource folder
         run: tree ${{ env.VERSIONS_LOCATION }}
@@ -138,7 +142,7 @@ jobs:
     if: ${{ always() && github.event.inputs.IS_RELEASE != null && github.event.inputs.IS_RELEASE == 'false' }}
     steps:
       - name: Checkout snapshots
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           ref: snapshots
 

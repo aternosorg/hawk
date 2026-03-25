@@ -141,14 +141,10 @@ class HawkTestCase extends TestCase
         foreach ($versions as $version) {
             if (!$version->isDot()) {
                 $dirName = $version->getFilename();
-                $major = null;
-                if (str_contains($dirName, ".")) {
-                    $major = explode(".", $dirName)[1];
-                }
                 $regionFile = new File(__DIR__ . "/../../examples/resources/versions/" . $dirName . "/region/r.0.0.mca");
                 $this->files[] = $regionFile;
                 $entityFile = null;
-                if ($major > 16 || $dirName === "latest") {
+                if (version_compare($dirName, "1.17", ">=") || $dirName === "latest") {
                     $entityFile = new File(__DIR__ . "/../../examples/resources/versions/" . $dirName . "/entities/r.0.0.mca");
                     $this->files[] = $entityFile;
                 }
@@ -172,14 +168,10 @@ class HawkTestCase extends TestCase
         foreach ($versions as $version) {
             if (!$version->isDot()) {
                 $dirName = $version->getFilename();
-                $major = null;
-                if (str_contains($dirName, ".")) {
-                    $major = explode(".", $dirName)[1];
-                }
                 $regionFile = new File(__DIR__ . "/../../examples/resources/versions/" . $dirName . "/region/r.-1.-1.mca");
                 $this->files[] = $regionFile;
                 $entityFile = null;
-                if ($major > 16 || $dirName === "latest") {
+                if (version_compare($dirName, "1.17", ">=") || $dirName === "latest") {
                     $entityFile = new File(__DIR__ . "/../../examples/resources/versions/" . $dirName . "/entities/r.-1.-1.mca");
                     $this->files[] = $entityFile;
                 }
@@ -199,10 +191,6 @@ class HawkTestCase extends TestCase
         foreach ($versions as $version) {
             if (!$version->isDot()) {
                 $dirName = $version->getFilename();
-                $major = null;
-                if (str_contains($dirName, ".")) {
-                    $major = explode(".", $dirName)[1];
-                }
                 $blockFiles[$dirName] = [];
                 $regionFile = new File(__DIR__ . "/../../examples/resources/versions/" . $dirName . "/region/r.0.0.mca");
                 $regionFileTwo = new File(__DIR__ . "/../../examples/resources/versions/" . $dirName . "/region/r.-1.-1.mca");
@@ -211,7 +199,7 @@ class HawkTestCase extends TestCase
                 $this->files[] = $regionFileTwo;
                 $entityFile = null;
                 $entityFileTwo = null;
-                if ($major > 16 || $dirName === "latest") {
+                if (version_compare($dirName, "1.17", ">=") || $dirName === "latest") {
                     $entityFile = new File(__DIR__ . "/../../examples/resources/versions/" . $dirName . "/entities/r.0.0.mca");
                     $entityFileTwo = new File(__DIR__ . "/../../examples/resources/versions/" . $dirName . "/entities/r.-1.-1.mca");
                     $blockFiles[$dirName][] = [$entityFile, $entityFileTwo];
@@ -232,10 +220,6 @@ class HawkTestCase extends TestCase
         foreach ($versions as $version) {
             if (!$version->isDot()) {
                 $dirName = $version->getFilename();
-                $major = null;
-                if (str_contains($dirName, ".")) {
-                    $major = explode(".", $dirName)[1];
-                }
                 $blockFiles[$dirName] = [];
                 $regionFile = new File(__DIR__ . "/../../examples/resources/versions/" . $dirName . "/region/r.0.0.mca");
                 $regionFileTwo = new File(__DIR__ . "/../../examples/resources/versions/" . $dirName . "/region/r.0.0.mca");
@@ -244,7 +228,7 @@ class HawkTestCase extends TestCase
                 $this->files[] = $regionFileTwo;
                 $entityFile = null;
                 $entityFileTwo = null;
-                if ($major > 16 || $dirName === "latest") {
+                if (version_compare($dirName, "1.17", ">=") || $dirName === "latest") {
                     $entityFile = new File(__DIR__ . "/../../examples/resources/versions/" . $dirName . "/entities/r.0.0.mca");
                     $entityFileTwo = new File(__DIR__ . "/../../examples/resources/versions/" . $dirName . "/entities/r.0.0.mca");
                     $blockFiles[$dirName][] = [$entityFile, $entityFileTwo];

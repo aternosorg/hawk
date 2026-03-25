@@ -80,7 +80,6 @@ class HawkTest extends HawkTestCase
         closedir($dir);
     }
 
-
     /**
      * @return array
      * @throws Exception
@@ -93,11 +92,7 @@ class HawkTest extends HawkTestCase
         foreach ($versions as $version) {
             if (!$version->isDot()) {
                 $dirName = $version->getFilename();
-                $major = null;
-                if (str_contains($dirName, ".")) {
-                    $major = explode(".", $dirName)[1];
-                }
-                if ($major > 16 || $dirName === "latest") {
+                if (version_compare($dirName, "1.17", ">=") || $dirName === "latest") {
                     $blockFiles[$dirName] = [
                         [
                             new File(__DIR__ . "/../files/versions/" . $dirName . "/region/r.0.0.mca")
@@ -131,11 +126,7 @@ class HawkTest extends HawkTestCase
         foreach ($versions as $version) {
             if (!$version->isDot()) {
                 $dirName = $version->getFilename();
-                $major = null;
-                if (str_contains($dirName, ".")) {
-                    $major = explode(".", $dirName)[1];
-                }
-                if ($major > 16 || $dirName === "latest") {
+                if (version_compare($dirName, "1.17", ">=") || $dirName === "latest") {
                     $blockFiles[$dirName] = [
                         [
                             new File(__DIR__ . "/../files/versions/" . $dirName . "/region/r.-1.-1.mca")
