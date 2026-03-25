@@ -62,6 +62,9 @@ jobs:
       - name: Start server for upgrade
         run: docker run --rm --name mc -e EULA=TRUE -e UID="$(id -u)" -e VERSION=${{ github.event.inputs.VERSION }} -e ENABLE_AUTOSTOP=TRUE -e AUTOSTOP_TIMEOUT_INIT=5 -e MEMORY=8G -v ./server:/data itzg/minecraft-server:latest --forceUpgrade
 
+      - name: Create latest version folder
+        run: mkdir ${{ env.VERSIONS_LOCATION }}${{ github.event.inputs.VERSION }}
+
       - name: Copy upgraded regions into version folder
         run: /bin/cp -rf server/world/dimensions/minecraft/overworld/region ${{ env.VERSIONS_LOCATION }}${{ github.event.inputs.VERSION }}
 
@@ -139,17 +142,17 @@ jobs:
       - name: Run phpunit tests
         run: vendor/bin/phpunit --colors=always --testdox
 
-#  delete-snapshot-branch:
-#    runs-on: ubuntu-latest
-#    permissions: write-all
-#    needs:
-#      - tests
-#    if: ${{ always() && github.event.inputs.IS_RELEASE != null && github.event.inputs.IS_RELEASE == 'false' }}
-#    steps:
-#      - name: Checkout snapshots
-#        uses: actions/checkout@v4
-#        with:
-#          ref: snapshots
-#
-#      - name: Delete snapshot branch
-#        run: git push origin --delete snapshots
+  delete-snapshot-branch:
+    runs-on: ubuntu-latest
+    permissions: write-all
+    needs:
+      - tests
+    if: ${{ always() && github.event.inputs.IS_RELEASE != null && github.event.inputs.IS_RELEASE == 'false' }}
+    steps:
+      - name: Checkout snapshots
+        uses: actions/checkout@v4
+        with:
+          ref: snapshots
+
+      - name: Delete snapshot branch
+        run: git push origin --delete snapshots
