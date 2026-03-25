@@ -71,16 +71,19 @@ jobs:
       - name: Copy upgraded entities into version folder
         run: /bin/cp -rf server/world/dimensions/minecraft/overworld/entities ${{ env.VERSIONS_LOCATION }}${{ github.event.inputs.VERSION }}
 
+      - name: Delete server folder
+        run: rm -rf server
+
       - if: ${{ github.event.inputs.IS_RELEASE == 'true' }}
         name: Committing to master
-        uses: EndBug/add-and-commit@v9
+        uses: EndBug/add-and-commit@v10
         with:
           message: 'add latest Minecraft world'
           push: true
 
       - if: ${{ github.event.inputs.IS_RELEASE == 'false' }}
         name: Committing to snapshots
-        uses: EndBug/add-and-commit@v9
+        uses: EndBug/add-and-commit@v10
         with:
           new_branch: snapshots
           message: 'add latest Minecraft world'
