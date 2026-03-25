@@ -139,17 +139,17 @@ jobs:
       - name: Run phpunit tests
         run: vendor/bin/phpunit --colors=always --testdox
 
-  delete-snapshot-branch:
-    runs-on: ubuntu-latest
-    permissions: write-all
-    needs:
-      - tests
-    if: ${{ always() && github.event.inputs.IS_RELEASE != null && github.event.inputs.IS_RELEASE == 'false' }}
-    steps:
-      - name: Checkout snapshots
-        uses: actions/checkout@v4
-        with:
-          ref: snapshots
-
-      - name: Delete snapshot branch
-        run: git push origin --delete snapshots
+#  delete-snapshot-branch:
+#    runs-on: ubuntu-latest
+#    permissions: write-all
+#    needs:
+#      - tests
+#    if: ${{ always() && github.event.inputs.IS_RELEASE != null && github.event.inputs.IS_RELEASE == 'false' }}
+#    steps:
+#      - name: Checkout snapshots
+#        uses: actions/checkout@v4
+#        with:
+#          ref: snapshots
+#
+#      - name: Delete snapshot branch
+#        run: git push origin --delete snapshots
