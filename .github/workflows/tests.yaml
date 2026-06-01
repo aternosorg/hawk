@@ -52,7 +52,7 @@ jobs:
         run: mkdir server
 
       - name: Get previous version
-        run: echo "PREVIOUS_VERSION=curl -sSL "https://piston-meta.mojang.com/mc/game/version_manifest.json" | jq -r --arg target "26.1.1" '[.versions[] | select(.type == "release") | .id] | index($target) as $idx | if $idx then .[$idx + 1] else empty end'" >> $GITHUB_ENV
+        run: echo "PREVIOUS_VERSION=curl -sSL "https://piston-meta.mojang.com/mc/game/version_manifest.json" | jq -r --arg target "${{ github.event.inputs.VERSION }}" '[.versions[] | select(.type == "release") | .id] | index($target) as $idx | if $idx then .[$idx + 1] else empty end'" >> $GITHUB_ENV
 
       - name: Start server for world creation
         run: docker run --rm --name mc -e EULA=TRUE -e UID="$(id -u)" -e VERSION=${{ github.event.inputs.VERSION }} -e ENABLE_AUTOSTOP=TRUE -e AUTOSTOP_TIMEOUT_INIT=5 -e MEMORY=8G -v ./server:/data itzg/minecraft-server:latest --forceUpgrade
