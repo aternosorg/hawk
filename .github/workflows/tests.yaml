@@ -60,7 +60,7 @@ jobs:
         run: echo "PREVIOUS_VERSION=$(curl -sSL "https://piston-meta.mojang.com/mc/game/version_manifest.json" | jq -cr '[.versions[] | select(.type == "release")] [0] .id')" >> $GITHUB_ENV
 
       - name: Start server for world creation
-        run: docker run --rm --name mc -e EULA=TRUE -e UID="$(id -u)" -e VERSION=${{ github.event.inputs.VERSION }} -e ENABLE_AUTOSTOP=TRUE -e AUTOSTOP_TIMEOUT_INIT=5 -e MEMORY=8G -v ./server:/data itzg/minecraft-server:latest --forceUpgrade
+        run: docker run --pull always --rm --name mc -e EULA=TRUE -e UID="$(id -u)" -e VERSION=${{ github.event.inputs.VERSION }} -e ENABLE_AUTOSTOP=TRUE -e AUTOSTOP_TIMEOUT_INIT=5 -e MEMORY=8G -v ./server:/data itzg/minecraft-server:latest --forceUpgrade
 
       - name: Copy old regions into server
         run:  /bin/cp -rf ${{ env.VERSIONS_LOCATION }}${{ env.PREVIOUS_VERSION }}/region server/world/dimensions/minecraft/overworld
@@ -69,7 +69,7 @@ jobs:
         run:  /bin/cp -rf ${{ env.VERSIONS_LOCATION }}${{ env.PREVIOUS_VERSION }}/entities server/world/dimensions/minecraft/overworld
 
       - name: Start server for upgrade
-        run: docker run --rm --name mc -e EULA=TRUE -e UID="$(id -u)" -e VERSION=${{ github.event.inputs.VERSION }} -e ENABLE_AUTOSTOP=TRUE -e AUTOSTOP_TIMEOUT_INIT=5 -e MEMORY=8G -v ./server:/data itzg/minecraft-server:latest --forceUpgrade
+        run: docker run --pull always --rm --name mc -e EULA=TRUE -e UID="$(id -u)" -e VERSION=${{ github.event.inputs.VERSION }} -e ENABLE_AUTOSTOP=TRUE -e AUTOSTOP_TIMEOUT_INIT=5 -e MEMORY=8G -v ./server:/data itzg/minecraft-server:latest --forceUpgrade
 
       - name: Create latest version folder
         run: mkdir ${{ env.VERSIONS_LOCATION }}${{ github.event.inputs.VERSION }}
