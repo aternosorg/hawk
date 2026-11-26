@@ -7,25 +7,17 @@ use Aternos\Hawk\DataBlock;
 use Aternos\Hawk\Exceptions\VersionNotSupportedException;
 use Aternos\Hawk\File;
 use Exception;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class BlockRegionTest extends HawkTestCase
 {
-    protected function tearDown(): void
-    {
-        parent::tearDown();
-        foreach ($this->files as $index => $file) {
-            $file->close();
-            unset($this->files[$index]);
-        }
-    }
-
     /**
-     * @dataProvider provideSingleBlockFile
      * @param File[] $blockFiles
      * @param array $entitiesFiles
      * @return void
      * @throws Exception
      */
+    #[DataProvider('provideSingleBlockFile')]
     public function testGetBlock(array $blockFiles, array $entitiesFiles): void
     {
         $region = new BlockRegion($blockFiles[0]);
@@ -41,12 +33,12 @@ class BlockRegionTest extends HawkTestCase
     }
 
     /**
-     * @dataProvider provideSingleBlockFile
      * @param File[] $blockFiles
      * @param array $entitiesFiles
      * @return void
      * @throws Exception
      */
+    #[DataProvider('provideSingleBlockFile')]
     public function testReplaceBlock(array $blockFiles, array $entitiesFiles): void
     {
         $region = new BlockRegion($blockFiles[0]);

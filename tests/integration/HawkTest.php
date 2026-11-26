@@ -12,6 +12,7 @@ use Aternos\Hawk\McCoordinatesFloat;
 use Aternos\Hawk\Tests\Unit\HawkTestCase;
 use DirectoryIterator;
 use Exception;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class HawkTest extends HawkTestCase
 {
@@ -55,7 +56,7 @@ class HawkTest extends HawkTestCase
         return new McCoordinatesFloat(-0.5, 64, -0.5);
     }
 
-    function copyTestFiles($src = null, $dst = null)
+    private static function copyTestFiles(?string $src = null, ?string $dst = null): void
     {
         if ($src === null) {
             $src = __DIR__ . "/../../examples/resources/versions";
@@ -71,7 +72,7 @@ class HawkTest extends HawkTestCase
         while (($file = readdir($dir))) {
             if (($file != '.') && ($file != '..')) {
                 if (is_dir($src . '/' . $file)) {
-                    $this->copyTestFiles($src . '/' . $file, $dst . '/' . $file);
+                    self::copyTestFiles($src . '/' . $file, $dst . '/' . $file);
                 } else {
                     copy($src . '/' . $file, $dst . '/' . $file);
                 }
@@ -84,9 +85,9 @@ class HawkTest extends HawkTestCase
      * @return array
      * @throws Exception
      */
-    public function provideSingleBlockFile(): array
+    public static function provideSingleBlockFile(): array
     {
-        $this->copyTestFiles();
+        self::copyTestFiles();
         $blockFiles = [];
         $versions = new DirectoryIterator(__DIR__ . "/../files/versions");
         foreach ($versions as $version) {
@@ -118,9 +119,9 @@ class HawkTest extends HawkTestCase
      * @return array
      * @throws Exception
      */
-    public function provideNegativeSingleBlockFile(): array
+    public static function provideNegativeSingleBlockFile(): array
     {
-        $this->copyTestFiles();
+        self::copyTestFiles();
         $blockFiles = [];
         $versions = new DirectoryIterator(__DIR__ . "/../files/versions");
         foreach ($versions as $version) {
@@ -149,12 +150,12 @@ class HawkTest extends HawkTestCase
     }
 
     /**
-     * @dataProvider provideSingleBlockFile
      * @param array $blockFiles
      * @param array $entitiesFiles
      * @return void
      * @throws Exception
      */
+    #[DataProvider('provideSingleBlockFile')]
     public function testGetBlock(array $blockFiles, array $entitiesFiles): void
     {
         $hawk = new Hawk(blockFiles: $blockFiles, entitiesFiles: $entitiesFiles);
@@ -169,12 +170,12 @@ class HawkTest extends HawkTestCase
     }
 
     /**
-     * @dataProvider provideNegativeSingleBlockFile
      * @param array $blockFiles
      * @param array $entitiesFiles
      * @return void
      * @throws Exception
      */
+    #[DataProvider('provideNegativeSingleBlockFile')]
     public function testGetBlockNegative(array $blockFiles, array $entitiesFiles): void
     {
         $hawk = new Hawk(blockFiles: $blockFiles, entitiesFiles: $entitiesFiles);
@@ -189,12 +190,12 @@ class HawkTest extends HawkTestCase
     }
 
     /**
-     * @dataProvider provideSingleBlockFile
      * @param array $blockFiles
      * @param array $entitiesFiles
      * @return void
      * @throws Exception
      */
+    #[DataProvider('provideSingleBlockFile')]
     public function testReplaceBlock(array $blockFiles, array $entitiesFiles): void
     {
         $hawk = new Hawk(blockFiles: $blockFiles, entitiesFiles: $entitiesFiles);
@@ -216,12 +217,12 @@ class HawkTest extends HawkTestCase
     }
 
     /**
-     * @dataProvider provideNegativeSingleBlockFile
      * @param array $blockFiles
      * @param array $entitiesFiles
      * @return void
      * @throws Exception
      */
+    #[DataProvider('provideNegativeSingleBlockFile')]
     public function testReplaceBlockNegative(array $blockFiles, array $entitiesFiles): void
     {
         $hawk = new Hawk(blockFiles: $blockFiles, entitiesFiles: $entitiesFiles);
@@ -243,12 +244,12 @@ class HawkTest extends HawkTestCase
     }
 
     /**
-     * @dataProvider provideSingleBlockFile
      * @param array $blockFiles
      * @param array $entitiesFiles
      * @return void
      * @throws Exception
      */
+    #[DataProvider('provideSingleBlockFile')]
     public function testGetAllEntitiesFromChunk(array $blockFiles, array $entitiesFiles): void
     {
         $hawk = new Hawk(blockFiles: $blockFiles, entitiesFiles: $entitiesFiles);
@@ -260,12 +261,12 @@ class HawkTest extends HawkTestCase
     }
 
     /**
-     * @dataProvider provideNegativeSingleBlockFile
      * @param array $blockFiles
      * @param array $entitiesFiles
      * @return void
      * @throws Exception
      */
+    #[DataProvider('provideNegativeSingleBlockFile')]
     public function testGetAllEntitiesFromNegativeChunk(array $blockFiles, array $entitiesFiles): void
     {
         $hawk = new Hawk(blockFiles: $blockFiles, entitiesFiles: $entitiesFiles);
@@ -277,12 +278,12 @@ class HawkTest extends HawkTestCase
     }
 
     /**
-     * @dataProvider provideSingleBlockFile
      * @param array $blockFiles
      * @param array $entitiesFiles
      * @return void
      * @throws Exception
      */
+    #[DataProvider('provideSingleBlockFile')]
     public function testGetEntities(array $blockFiles, array $entitiesFiles): void
     {
         $hawk = new Hawk(blockFiles: $blockFiles, entitiesFiles: $entitiesFiles);
@@ -296,12 +297,12 @@ class HawkTest extends HawkTestCase
     }
 
     /**
-     * @dataProvider provideNegativeSingleBlockFile
      * @param array $blockFiles
      * @param array $entitiesFiles
      * @return void
      * @throws Exception
      */
+    #[DataProvider('provideNegativeSingleBlockFile')]
     public function testGetNegativeEntities(array $blockFiles, array $entitiesFiles): void
     {
         $hawk = new Hawk(blockFiles: $blockFiles, entitiesFiles: $entitiesFiles);
@@ -315,12 +316,12 @@ class HawkTest extends HawkTestCase
     }
 
     /**
-     * @dataProvider provideSingleBlockFile
      * @param array $blockFiles
      * @param array $entitiesFiles
      * @return void
      * @throws Exception
      */
+    #[DataProvider('provideSingleBlockFile')]
     public function testDeleteEntity(array $blockFiles, array $entitiesFiles): void
     {
         $hawk = new Hawk(blockFiles: $blockFiles, entitiesFiles: $entitiesFiles);
@@ -336,12 +337,12 @@ class HawkTest extends HawkTestCase
     }
 
     /**
-     * @dataProvider provideNegativeSingleBlockFile
      * @param array $blockFiles
      * @param array $entitiesFiles
      * @return void
      * @throws Exception
      */
+    #[DataProvider('provideNegativeSingleBlockFile')]
     public function testDeleteNegativeEntity(array $blockFiles, array $entitiesFiles): void
     {
         $hawk = new Hawk(blockFiles: $blockFiles, entitiesFiles: $entitiesFiles);
@@ -357,12 +358,12 @@ class HawkTest extends HawkTestCase
     }
 
     /**
-     * @dataProvider provideSingleBlockFile
      * @param array $blockFiles
      * @param array $entitiesFiles
      * @return void
      * @throws Exception
      */
+    #[DataProvider('provideSingleBlockFile')]
     public function testGetAllBlockEntitiesFromChunk(array $blockFiles, array $entitiesFiles): void
     {
         $hawk = new Hawk(blockFiles: $blockFiles, entitiesFiles: $entitiesFiles);
@@ -374,12 +375,12 @@ class HawkTest extends HawkTestCase
     }
 
     /**
-     * @dataProvider provideNegativeSingleBlockFile
      * @param array $blockFiles
      * @param array $entitiesFiles
      * @return void
      * @throws Exception
      */
+    #[DataProvider('provideNegativeSingleBlockFile')]
     public function testGetAllBlockEntitiesFromNegativeChunk(array $blockFiles, array $entitiesFiles): void
     {
         $hawk = new Hawk(blockFiles: $blockFiles, entitiesFiles: $entitiesFiles);
@@ -391,12 +392,12 @@ class HawkTest extends HawkTestCase
     }
 
     /**
-     * @dataProvider provideSingleBlockFile
      * @param array $blockFiles
      * @param array $entitiesFiles
      * @return void
      * @throws Exception
      */
+    #[DataProvider('provideSingleBlockFile')]
     public function testGetBlockEntities(array $blockFiles, array $entitiesFiles): void
     {
         $hawk = new Hawk(blockFiles: $blockFiles, entitiesFiles: $entitiesFiles);
@@ -410,12 +411,12 @@ class HawkTest extends HawkTestCase
     }
 
     /**
-     * @dataProvider provideNegativeSingleBlockFile
      * @param array $blockFiles
      * @param array $entitiesFiles
      * @return void
      * @throws Exception
      */
+    #[DataProvider('provideNegativeSingleBlockFile')]
     public function testGetNegativeBlockEntities(array $blockFiles, array $entitiesFiles): void
     {
         $hawk = new Hawk(blockFiles: $blockFiles, entitiesFiles: $entitiesFiles);
@@ -429,12 +430,12 @@ class HawkTest extends HawkTestCase
     }
 
     /**
-     * @dataProvider provideSingleBlockFile
      * @param array $blockFiles
      * @param array $entitiesFiles
      * @return void
      * @throws Exception
      */
+    #[DataProvider('provideSingleBlockFile')]
     public function testDeleteBlockEntity(array $blockFiles, array $entitiesFiles): void
     {
         $hawk = new Hawk(blockFiles: $blockFiles, entitiesFiles: $entitiesFiles);
@@ -450,12 +451,12 @@ class HawkTest extends HawkTestCase
     }
 
     /**
-     * @dataProvider provideNegativeSingleBlockFile
      * @param array $blockFiles
      * @param array $entitiesFiles
      * @return void
      * @throws Exception
      */
+    #[DataProvider('provideNegativeSingleBlockFile')]
     public function testDeleteNegativeBlockEntity(array $blockFiles, array $entitiesFiles): void
     {
         $hawk = new Hawk(blockFiles: $blockFiles, entitiesFiles: $entitiesFiles);
