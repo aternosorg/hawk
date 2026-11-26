@@ -141,7 +141,7 @@ class BlockState
      * @return CompoundTag
      * @throws Exception
      */
-    public function createTag(int $section = null): CompoundTag
+    public function createTag(?int $section = null): CompoundTag
     {
         $blockState = new CompoundTag();
         $palette = $this->palette->createTag();

@@ -171,7 +171,7 @@ abstract class Data
      * @param int|null $section Only for debug
      * @return LongArrayTag
      */
-    public function createTag(int $paletteLength, int $section = null): LongArrayTag
+    public function createTag(int $paletteLength, ?int $section = null): LongArrayTag
     {
         $data = new LongArrayTag();
         if (!$this->isDataBlocksFilled()) {
