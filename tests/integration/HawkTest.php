@@ -3,6 +3,7 @@
 namespace Aternos\Hawk\Tests\Integration;
 
 use Aternos\Hawk\BlockEntity;
+use Aternos\Hawk\BlockRegion;
 use Aternos\Hawk\Entity;
 use Aternos\Hawk\Exceptions\VersionNotSupportedException;
 use Aternos\Hawk\File;
@@ -206,6 +207,95 @@ class HawkTest extends HawkTestCase
         $block = $hawk->getBlock($this->getBlockCoords());
         $this->assertEquals("minecraft:wool", $block->getPaletteBlock()->getName());
         $this->closeFiles($blockFiles, $entitiesFiles);
+    }
+
+    /**
+     * Reads the raw section tags of the chunk at the block coordinates, as SNBT per key and section Y
+     *
+     * @param File $blockFile
+     * @return array<int, array<string, string>>
+     * @throws Exception
+     */
+    protected function readRawSections(File $blockFile): array
+    {
+        $chunkTag = (new BlockRegion($blockFile))->getChunkFromBlock($this->getBlockCoords())->getTag();
+        // Before 1.18, the chunk data is wrapped in a "Level" tag and the list is called "Sections"
+        $levelTag = $chunkTag->getCompound("Level") ?? $chunkTag;
+        $sectionsTag = $levelTag->getList("Sections") ?? $levelTag->getList("sections");
+
+        $sections = [];
+        foreach ($sectionsTag as $sectionTag) {
+            $entries = [];
+            foreach ($sectionTag as $key => $value) {
+                $entries[$key] = $value->toSNBT();
+            }
+            ksort($entries);
+            $y = $sectionTag->getByte("Y")->getValue();
+            $this->assertArrayNotHasKey($y, $sections, "Section " . $y . " exists twice");
+            $sections[$y] = $entries;
+        }
+        ksort($sections);
+        return $sections;
+    }
+
+    /**
+     * @dataProvider provideSingleBlockFile
+     * @param array $blockFiles
+     * @param array $entitiesFiles
+     * @return void
+     * @throws Exception
+     */
+    public function testSaveKeepsSectionsAndTheirLight(array $blockFiles, array $entitiesFiles): void
+    {
+        // Entries that change when a block is replaced
+        $blockEntryKeys = ["BlockStates", "Palette", "block_states"];
+        $withoutBlockEntries = fn(array $entries) => array_diff_key($entries, array_flip($blockEntryKeys));
+
+        $sectionsBefore = $this->readRawSections($blockFiles[0]);
+
+        $hawk = new Hawk(blockFiles: $blockFiles, entitiesFiles: $entitiesFiles);
+        if ($this->areBlocksSupportedInDataSet()) {
+            $hawk->replaceBlock($this->getBlockCoords(), "minecraft:stone");
+        }
+        $hawk->save();
+
+        $sectionsAfter = $this->readRawSections($blockFiles[0]);
+
+        $this->assertSame(array_keys($sectionsBefore), array_keys($sectionsAfter), "Sections of the chunk changed");
+        foreach ($sectionsBefore as $y => $entriesBefore) {
+            $this->assertSame(
+                $withoutBlockEntries($entriesBefore),
+                $withoutBlockEntries($sectionsAfter[$y]),
+                "Entries of section " . $y . " changed"
+            );
+        }
+        $this->closeFiles($blockFiles, $entitiesFiles);
+    }
+
+    /**
+     * In the 1.17.1 test world, section 8 of chunk 0, 0 has no blocks, only "SkyLight"
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function testReplaceBlockInSectionWithoutBlocksKeepsItsLight(): void
+    {
+        $this->copyTestFiles();
+        $blockFile = new File(__DIR__ . "/../files/versions/1.17.1/region/r.0.0.mca");
+        $coordinates = new McCoordinates3D(1, 8 * 16 + 1, 1);
+
+        $skyLightBefore = $this->readRawSections($blockFile)[8]["SkyLight"];
+
+        $hawk = new Hawk(blockFiles: [$blockFile]);
+        $hawk->replaceBlock($coordinates, "minecraft:stone");
+        $hawk->save();
+
+        $sectionAfter = $this->readRawSections($blockFile)[8];
+        $this->assertSame($skyLightBefore, $sectionAfter["SkyLight"]);
+        $this->assertArrayHasKey("BlockStates", $sectionAfter);
+        $hawk = new Hawk(blockFiles: [$blockFile]);
+        $this->assertEquals("minecraft:stone", $hawk->getBlock($coordinates)->getPaletteBlock()->getName());
+        $blockFile->close();
     }
 
     /**
