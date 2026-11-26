@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 require_once __DIR__ . "/../vendor/autoload.php";
 
 use Aternos\Hawk\File;
@@ -48,7 +50,7 @@ if(count($coordinates) !== 3){
     echo "Wrong coordinates " . PHP_EOL;
     return;
 }
-$entityPos = new McCoordinatesFloat($coordinates[0], $coordinates[1], $coordinates[2]);
+$entityPos = new McCoordinatesFloat((float) $coordinates[0], (float) $coordinates[1], (float) $coordinates[2]);
 
 $fileName = Region::getRegionFileNameFromBlock(McCoordinatesFloat::get3DCoordinates($entityPos));
 $blockPath = $inputPath . "/region/" . $fileName;

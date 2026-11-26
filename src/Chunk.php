@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Aternos\Hawk;
 
 use Aternos\Nbt\Tag\CompoundTag;
@@ -42,7 +44,7 @@ abstract class Chunk
      */
     public static function getChunkCoordinatesFromBlock(McCoordinates3D $coordinates): McCoordinates2D
     {
-        return new McCoordinates2D(floor($coordinates->x / 16), floor($coordinates->z / 16));
+        return new McCoordinates2D((int) floor($coordinates->x / 16), (int) floor($coordinates->z / 16));
     }
 
     /**

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Aternos\Hawk;
 
 use Aternos\Nbt\Tag\CompoundTag;
@@ -28,7 +30,7 @@ abstract class Section
      */
     public static function getSectionCoordinates(McCoordinates3D $coordinates): McCoordinates3D
     {
-        return new McCoordinates3D(floor($coordinates->x / 16), floor($coordinates->y / 16), floor($coordinates->z / 16));
+        return new McCoordinates3D((int) floor($coordinates->x / 16), (int) floor($coordinates->y / 16), (int) floor($coordinates->z / 16));
     }
 
     /**

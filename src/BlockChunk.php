@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Aternos\Hawk;
 
 use Aternos\Hawk\Exceptions\VersionNotSupportedException;
@@ -114,7 +116,7 @@ abstract class BlockChunk extends Chunk
     public function getBlock(McCoordinates3D $coordinates): DataBlock
     {
         if (!VersionHelper::areBlocksSupported($this->version)) {
-            throw new VersionNotSupportedException($this->version);
+            throw new VersionNotSupportedException((string) $this->version);
         }
         $section = $this->getSection($coordinates);
         if ($section === null) {
@@ -136,7 +138,7 @@ abstract class BlockChunk extends Chunk
     public function replaceBlock(McCoordinates3D $coordinates, string $blockName = "minecraft:stone"): void
     {
         if (!VersionHelper::areBlocksSupported($this->version)) {
-            throw new VersionNotSupportedException($this->version);
+            throw new VersionNotSupportedException((string) $this->version);
         }
         $section = $this->getSection($coordinates);
         if ($section === null) {
