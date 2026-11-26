@@ -11,6 +11,8 @@ use Aternos\Hawk\Hawk;
 use Aternos\Hawk\McCoordinates3D;
 use Aternos\Hawk\McCoordinatesFloat;
 use Aternos\Hawk\Tests\Unit\HawkTestCase;
+use Aternos\Nbt\IO\Writer\StringWriter;
+use Aternos\Nbt\NbtFormat;
 use DirectoryIterator;
 use Exception;
 
@@ -210,7 +212,8 @@ class HawkTest extends HawkTestCase
     }
 
     /**
-     * Reads the raw section tags of the chunk at the block coordinates, as SNBT per key and section Y
+     * Reads the raw section tags of the chunk at the block coordinates, as hex encoded NBT per key and section Y.
+     * Uses the binary writer instead of toSNBT(), which older versions of aternos/nbt (for PHP 8.0) do not have.
      *
      * @param File $blockFile
      * @return array<int, array<string, string>>
@@ -227,7 +230,10 @@ class HawkTest extends HawkTestCase
         foreach ($sectionsTag as $sectionTag) {
             $entries = [];
             foreach ($sectionTag as $key => $value) {
-                $entries[$key] = $value->toSNBT();
+                $writer = (new StringWriter())->setFormat(NbtFormat::JAVA_EDITION);
+                // write() only accepts a CompoundTag as root, writeContent() works for every tag
+                $value->writeContent($writer);
+                $entries[$key] = bin2hex($writer->getStringData());
             }
             ksort($entries);
             $y = $sectionTag->getByte("Y")->getValue();
