@@ -135,7 +135,7 @@ class SectionV1519 extends Section
      */
     public function createTag(): CompoundTag
     {
-        $section = new CompoundTag();
+        $section = $this->getBaseTag();
         $section->set("Y", (new ByteTag())->setValue($this->coordinates->y));
         $section->set($this->dataTagName, $this->data->createTag($this->getPalette()->getLength(), $this->coordinates->y));
         $section->set($this->paletteTagName, $this->palette->createTag());
