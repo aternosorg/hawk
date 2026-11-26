@@ -1,13 +1,13 @@
 <?php
 
-namespace Aternos\Hawk\Versions\v1139;
+namespace Aternos\Hawk\Versions\v1519;
 
 use Aternos\Hawk\Data;
 use Aternos\Hawk\DataBlock;
 use Aternos\Hawk\Section;
 use Aternos\Nbt\Tag\LongArrayTag;
 
-class DataV1139 extends Data
+class DataV1519 extends Data
 {
     /**
      * @param $tag
