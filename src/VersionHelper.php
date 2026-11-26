@@ -4,6 +4,7 @@ namespace Aternos\Hawk;
 
 
 use Aternos\Hawk\Versions\v1139\BlockChunkV1139;
+use Aternos\Hawk\Versions\v1519\BlockChunkV1519;
 use Aternos\Hawk\Versions\v2566\BlockChunkV2566;
 use Aternos\Hawk\Versions\v2567\BlockChunkV2567;
 use Aternos\Hawk\Versions\v2578\BlockChunkV2578;
@@ -21,7 +22,8 @@ use Exception;
 
 class VersionHelper
 {
-    private const BLOCK_SUPPORT = 2566;
+    // 1.13 (the flattening) is the first version with block state palettes
+    private const BLOCK_SUPPORT = 1519;
     private const DATA_VERSIONS = [
         5023 => [
             "name" => "26.3",
@@ -121,67 +123,67 @@ class VersionHelper
         ],
         2230 => [
             "name" => "1.15.2",
-            "class" => BlockChunkV1139::class,
+            "class" => BlockChunkV1519::class,
             "level" => true,
             "entities" => true,
         ],
         2227 => [
             "name" => "1.15.1",
-            "class" => BlockChunkV1139::class,
+            "class" => BlockChunkV1519::class,
             "level" => true,
             "entities" => true,
         ],
         2225 => [
             "name" => "1.15",
-            "class" => BlockChunkV1139::class,
+            "class" => BlockChunkV1519::class,
             "level" => true,
             "entities" => true,
         ],
         1976 => [
             "name" => "1.14.4",
-            "class" => BlockChunkV1139::class,
+            "class" => BlockChunkV1519::class,
             "level" => true,
             "entities" => true,
         ],
         1968 => [
             "name" => "1.14.3",
-            "class" => BlockChunkV1139::class,
+            "class" => BlockChunkV1519::class,
             "level" => true,
             "entities" => true,
         ],
         1963 => [
             "name" => "1.14.2",
-            "class" => BlockChunkV1139::class,
+            "class" => BlockChunkV1519::class,
             "level" => true,
             "entities" => true,
         ],
         1957 => [
             "name" => "1.14.1",
-            "class" => BlockChunkV1139::class,
+            "class" => BlockChunkV1519::class,
             "level" => true,
             "entities" => true,
         ],
         1952 => [
             "name" => "1.14",
-            "class" => BlockChunkV1139::class,
+            "class" => BlockChunkV1519::class,
             "level" => true,
             "entities" => true,
         ],
         1631 => [
             "name" => "1.13.2",
-            "class" => BlockChunkV1139::class,
+            "class" => BlockChunkV1519::class,
             "level" => true,
             "entities" => true,
         ],
         1628 => [
             "name" => "1.13.1",
-            "class" => BlockChunkV1139::class,
+            "class" => BlockChunkV1519::class,
             "level" => true,
             "entities" => true,
         ],
         1519 => [
             "name" => "1.13",
-            "class" => BlockChunkV1139::class,
+            "class" => BlockChunkV1519::class,
             "level" => true,
             "entities" => true,
         ],
