@@ -29,14 +29,12 @@ class BlockRegionTest extends HawkTestCase
     public function testGetBlock(array $blockFiles, array $entitiesFiles): void
     {
         $region = new BlockRegion($blockFiles[0]);
-        try {
-            $block = $region->getBlock($this->getBlockCoords());
-        } catch (VersionNotSupportedException $e) {
+        if (!$this->areBlocksSupportedInDataSet()) {
             $this->expectException(VersionNotSupportedException::class);
-            $region->getBlock($this->getBlockCoords());
         }
         $block = $region->getBlock($this->getBlockCoords());
         $this->assertInstanceOf(DataBlock::class, $block);
+        $this->assertEquals("minecraft:furnace", $block->getPaletteBlock()->getName());
         $this->closeFiles($blockFiles, $entitiesFiles);
     }
 
@@ -50,14 +48,10 @@ class BlockRegionTest extends HawkTestCase
     public function testReplaceBlock(array $blockFiles, array $entitiesFiles): void
     {
         $region = new BlockRegion($blockFiles[0]);
-
-        try {
-            $block = $region->getBlock($this->getBlockCoords());
-        } catch (VersionNotSupportedException $e) {
+        if (!$this->areBlocksSupportedInDataSet()) {
             $this->expectException(VersionNotSupportedException::class);
-            $region->getBlock($this->getBlockCoords());
-            return;
         }
+        $block = $region->getBlock($this->getBlockCoords());
         $this->assertInstanceOf(DataBlock::class, $block);
         $this->assertEquals("minecraft:furnace", $block->getPaletteBlock()->getName());
         $region->replaceBlock($this->getBlockCoords(), "minecraft:wool");
