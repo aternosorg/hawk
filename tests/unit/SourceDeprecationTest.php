@@ -2,6 +2,7 @@
 
 namespace Aternos\Hawk\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
@@ -12,7 +13,7 @@ use RecursiveIteratorIterator;
  */
 class SourceDeprecationTest extends TestCase
 {
-    public function provideSourceFiles(): array
+    public static function provideSourceFiles(): array
     {
         $sourceDirectory = dirname(__DIR__, 2) . "/src";
         $files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($sourceDirectory, RecursiveDirectoryIterator::SKIP_DOTS));
@@ -28,9 +29,7 @@ class SourceDeprecationTest extends TestCase
         return $sourceFiles;
     }
 
-    /**
-     * @dataProvider provideSourceFiles
-     */
+    #[DataProvider('provideSourceFiles')]
     public function testSourceFileCompilesWithoutDeprecations(string $path): void
     {
         $command = [PHP_BINARY, "-d", "error_reporting=-1", "-d", "display_errors=stderr", "-d", "log_errors=0", "-l", $path];
