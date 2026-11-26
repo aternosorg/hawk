@@ -10,6 +10,10 @@ class PaletteBlock
 {
     protected string $name;
 
+    protected string $nameTagName = "Name";
+
+    protected string $propertiesTagName = "Properties";
+
     /**
      * @var Property[]
      */
@@ -48,8 +52,8 @@ class PaletteBlock
     public static function newFromTag(CompoundTag $tag): PaletteBlock
     {
         $paletteBlock = new static();
-        $paletteBlock->name = $tag->getString("Name")->getValue();
-        $compound = $tag->getCompound("Properties");
+        $paletteBlock->name = $tag->getString($paletteBlock->nameTagName)->getValue();
+        $compound = $tag->getCompound($paletteBlock->propertiesTagName);
         if ($compound !== null) {
             foreach ($compound as $propertiesTag) {
                 if ($propertiesTag instanceof StringTag){
@@ -85,7 +89,7 @@ class PaletteBlock
     public function createTag(): CompoundTag
     {
         $block = new CompoundTag();
-        $block->set("Name", (new StringTag())->setValue($this->name));
+        $block->set($this->nameTagName, (new StringTag())->setValue($this->name));
         $properties = new CompoundTag();
         if (empty($this->properties)) {
             return $block;
@@ -96,7 +100,7 @@ class PaletteBlock
             $stringTag->setValue($property->getValue());
             $properties->set($property->getName(),$stringTag);
         }
-        $block->set("Properties", $properties);
+        $block->set($this->propertiesTagName, $properties);
         return $block;
     }
 
