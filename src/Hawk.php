@@ -132,23 +132,31 @@ class Hawk
     }
 
     /**
-     * @param McCoordinates3D $coordinates
-     * @return EntitiesRegion
+     * @param McCoordinates2D $coordinates
+     * @return BlockRegion
      * @throws Exception
      */
-    public function getBlockRegionFromChunk(McCoordinates2D $coordinates): Region
+    public function getBlockRegionFromChunk(McCoordinates2D $coordinates): BlockRegion
     {
-        return $this->getRegion($this->blockRegions, Region::getRegionCoordinatesFromChunkCoordinates($coordinates));
+        $region = $this->getRegion($this->blockRegions, Region::getRegionCoordinatesFromChunkCoordinates($coordinates));
+        if (!($region instanceof BlockRegion)) {
+            throw new Exception("Not a block region.");
+        }
+        return $region;
     }
 
     /**
-     * @param McCoordinates3D $coordinates
+     * @param McCoordinates2D $coordinates
      * @return EntitiesRegion
      * @throws Exception
      */
-    public function getEntitiesRegionFromChunk(McCoordinates2D $coordinates): Region
+    public function getEntitiesRegionFromChunk(McCoordinates2D $coordinates): EntitiesRegion
     {
-        return $this->getRegion($this->entitiesRegions, Region::getRegionCoordinatesFromChunkCoordinates($coordinates));
+        $region = $this->getRegion($this->entitiesRegions, Region::getRegionCoordinatesFromChunkCoordinates($coordinates));
+        if (!($region instanceof EntitiesRegion)) {
+            throw new Exception("Not a entities region.");
+        }
+        return $region;
     }
 
     /**
