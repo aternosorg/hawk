@@ -12,6 +12,8 @@ Currently, following versions are supported:
 
 ### Installation
 
+Hawk requires PHP 8.4 or newer.
+
 ```bash
 composer require aternos/hawk
 ```
