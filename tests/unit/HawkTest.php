@@ -234,12 +234,16 @@ class HawkTest extends HawkTestCase
     public function testGetBlockRegionFromChunk(array $blockFiles, array $entitiesFiles): void
     {
         $hawk = new Hawk($blockFiles, $entitiesFiles);
-        $region = $hawk->getBlockRegionFromChunk($this->getRegionCoords());
-        $this->assertInstanceOf(BlockRegion::class, $region);
-        $this->assertEquals($this->getRegionCoords(), $region->getCoordinates());
-        $region = $hawk->getBlockRegionFromChunk($this->getNegativeRegionCoords());
-        $this->assertInstanceOf(BlockRegion::class, $region);
-        $this->assertEquals($this->getNegativeRegionCoords(), $region->getCoordinates());
+        foreach ([$this->getChunkCoords(), $this->getLastChunkInRegionCoords()] as $chunkCoordinates) {
+            $region = $hawk->getBlockRegionFromChunk($chunkCoordinates);
+            $this->assertInstanceOf(BlockRegion::class, $region);
+            $this->assertEquals($this->getRegionCoords(), $region->getCoordinates());
+        }
+        foreach ([$this->getNegativeChunkCoords(), $this->getFirstChunkInNegativeRegionCoords()] as $chunkCoordinates) {
+            $region = $hawk->getBlockRegionFromChunk($chunkCoordinates);
+            $this->assertInstanceOf(BlockRegion::class, $region);
+            $this->assertEquals($this->getNegativeRegionCoords(), $region->getCoordinates());
+        }
         $this->closeFiles($blockFiles, $entitiesFiles);
     }
 
@@ -258,12 +262,16 @@ class HawkTest extends HawkTestCase
             $this->assertTrue($hawk->hasNoEntitiesRegions);
             return;
         }
-        $region = $hawk->getEntitiesRegionFromChunk($this->getRegionCoords());
-        $this->assertInstanceOf(EntitiesRegion::class, $region);
-        $this->assertEquals($this->getRegionCoords(), $region->getCoordinates());
-        $region = $hawk->getEntitiesRegionFromChunk($this->getNegativeRegionCoords());
-        $this->assertInstanceOf(EntitiesRegion::class, $region);
-        $this->assertEquals($this->getNegativeRegionCoords(), $region->getCoordinates());
+        foreach ([$this->getChunkCoords(), $this->getLastChunkInRegionCoords()] as $chunkCoordinates) {
+            $region = $hawk->getEntitiesRegionFromChunk($chunkCoordinates);
+            $this->assertInstanceOf(EntitiesRegion::class, $region);
+            $this->assertEquals($this->getRegionCoords(), $region->getCoordinates());
+        }
+        foreach ([$this->getNegativeChunkCoords(), $this->getFirstChunkInNegativeRegionCoords()] as $chunkCoordinates) {
+            $region = $hawk->getEntitiesRegionFromChunk($chunkCoordinates);
+            $this->assertInstanceOf(EntitiesRegion::class, $region);
+            $this->assertEquals($this->getNegativeRegionCoords(), $region->getCoordinates());
+        }
         $this->closeFiles($blockFiles, $entitiesFiles);
     }
 

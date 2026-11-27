@@ -20,8 +20,10 @@ class RegionTest extends HawkTestCase
 
     public function testGetBlockRegionCoordinatesFromChunkCoordinates()
     {
-        $this->assertEquals($this->getChunkCoords(),Region::getRegionCoordinatesFromChunkCoordinates($this->getChunkCoords()));
-        $this->assertEquals($this->getNegativeChunkCoords(),Region::getRegionCoordinatesFromChunkCoordinates($this->getNegativeChunkCoords()));
+        $this->assertEquals($this->getRegionCoords(), Region::getRegionCoordinatesFromChunkCoordinates($this->getChunkCoords()));
+        $this->assertEquals($this->getRegionCoords(), Region::getRegionCoordinatesFromChunkCoordinates($this->getLastChunkInRegionCoords()));
+        $this->assertEquals($this->getNegativeRegionCoords(), Region::getRegionCoordinatesFromChunkCoordinates($this->getNegativeChunkCoords()));
+        $this->assertEquals($this->getNegativeRegionCoords(), Region::getRegionCoordinatesFromChunkCoordinates($this->getFirstChunkInNegativeRegionCoords()));
     }
 
     /**
