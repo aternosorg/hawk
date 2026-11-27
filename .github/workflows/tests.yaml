@@ -24,7 +24,7 @@ jobs:
       isInRepo: ${{ steps.save-var.outputs.IS_IN_REPO }}
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.event.repository.default_branch }}
 
@@ -44,7 +44,7 @@ jobs:
     if: ${{ github.event.inputs.VERSION != null && github.event.inputs.IS_RELEASE != null && needs.is-in-repo.outputs.isInRepo == 'false' }}
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.event.repository.default_branch }}
 
@@ -85,14 +85,14 @@ jobs:
 
       - if: ${{ github.event.inputs.IS_RELEASE == 'true' }}
         name: Committing to master
-        uses: EndBug/add-and-commit@v10
+        uses: EndBug/add-and-commit@v11
         with:
           message: 'add latest Minecraft world'
           push: true
 
       - if: ${{ github.event.inputs.IS_RELEASE == 'false' }}
         name: Committing to snapshots
-        uses: EndBug/add-and-commit@v10
+        uses: EndBug/add-and-commit@v11
         with:
           new_branch: snapshots
           message: 'add latest Minecraft world'
@@ -113,7 +113,7 @@ jobs:
 
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Show resource folder
         run: tree ${{ env.VERSIONS_LOCATION }}
@@ -128,7 +128,7 @@ jobs:
         run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
 
       - name: Restore composer from cache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
@@ -151,7 +151,7 @@ jobs:
     if: ${{ always() && github.event.inputs.IS_RELEASE != null && github.event.inputs.IS_RELEASE == 'false' }}
     steps:
       - name: Checkout snapshots
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ref: snapshots
 
