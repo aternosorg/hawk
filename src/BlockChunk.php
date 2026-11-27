@@ -271,7 +271,7 @@ abstract class BlockChunk extends Chunk
     protected function createBlockEntitiesTag(): ListTag
     {
         $blockEntities = new ListTag();
-        $blockEntities->setContentTag(CompoundTag::TYPE);
+        $blockEntities->setContentType(CompoundTag::TYPE);
         foreach ($this->blockEntities as $blockEntity) {
             $blockEntities[] = $blockEntity->createTag();
         }
@@ -287,7 +287,7 @@ abstract class BlockChunk extends Chunk
     protected function createEntitiesTag(): ListTag
     {
         $entities = new ListTag();
-        $entities->setContentTag(CompoundTag::TYPE);
+        $entities->setContentType(CompoundTag::TYPE);
         foreach ($this->entities as $entity) {
             $entities[] = $entity->createTag();
         }
@@ -303,7 +303,7 @@ abstract class BlockChunk extends Chunk
     protected function createSectionsTag(): ListTag
     {
         $sections = new ListTag();
-        $sections->setContentTag(CompoundTag::TYPE);
+        $sections->setContentType(CompoundTag::TYPE);
         foreach ($this->sections as $section) {
             $sections[] = $section->createTag();
         }
