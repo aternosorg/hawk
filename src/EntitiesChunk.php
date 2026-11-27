@@ -37,7 +37,7 @@ class EntitiesChunk extends Chunk
     public function createEntitiesTag(): ListTag
     {
         $entities = new ListTag();
-        $entities->setContentTag(CompoundTag::TYPE);
+        $entities->setContentType(CompoundTag::TYPE);
         foreach ($this->entities as $entity) {
             $entities[] = $entity->createTag();
         }

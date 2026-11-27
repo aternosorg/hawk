@@ -12,7 +12,7 @@
     "require": {
         "php": ">=8.4",
         "ext-readline": "*",
-        "aternos/nbt": ">=1.12.1"
+        "aternos/nbt": "^2.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^13.4"

@@ -161,7 +161,7 @@ class SectionV2860 extends SectionV2730
      */
     public function createTag(): CompoundTag
     {
-        $section = new CompoundTag();
+        $section = $this->getBaseTag();
         $section->set("Y", (new ByteTag())->setValue($this->coordinates->y));
         $section->set($this->blockStateTagName, $this->blockState->createTag($this->coordinates->y));
         if($this->biomes !== null){

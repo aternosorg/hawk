@@ -104,7 +104,7 @@ class Palette
     public function createTag(): ListTag
     {
         $palette = new ListTag();
-        $palette->setContentTag(CompoundTag::TYPE);
+        $palette->setContentType(CompoundTag::TYPE);
         foreach ($this->getPaletteBlocks() as $paletteBlock) {
             $palette[] = $paletteBlock->createTag();
         }
