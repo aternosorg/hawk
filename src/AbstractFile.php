@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Aternos\Hawk;
 
-use Exception;
+use Aternos\Hawk\Exceptions\FileException;
 
 abstract class AbstractFile
 {
@@ -38,7 +38,7 @@ abstract class AbstractFile
 
     /**
      * @param ?string $path
-     * @throws Exception
+     * @throws FileException
      */
     public function __construct(?string $path = null)
     {
@@ -49,7 +49,7 @@ abstract class AbstractFile
         $this->fileName = basename($path);
         $this->fileStream = fopen($this->dir . "/" . $this->fileName, "r+");
         if ($this->fileStream === false) {
-            throw new Exception("Error while opening file.");
+            throw new FileException("open", $path);
         }
     }
 
@@ -113,13 +113,13 @@ abstract class AbstractFile
      * Reads byte string and converts it to Uint32 big endian
      *
      * @return int Uint32 big endian
-     * @throws Exception "Nothing to unpack"
+     * @throws FileException
      */
     public function readStringToUInt32BigEndian(): int
     {
         $result = unpack("N", $this->read(4));
         if ($result === false) {
-            throw new Exception("Nothing to unpack");
+            throw new FileException("read an unsigned 32-bit integer from", FileException::getPathOfFile($this));
         }
         return $result[1];
     }
@@ -128,7 +128,7 @@ abstract class AbstractFile
      * Reads byte string and converts it to Uint8
      *
      * @return int Uint8
-     * @throws Exception "Error while reading"
+     * @throws FileException
      */
     public function readStringToUInt8(): int
     {
@@ -153,7 +153,7 @@ abstract class AbstractFile
         while (!feof($this->fileStream)){
             $currentContent = fgets($this->fileStream);
             if ($currentContent === false) {
-                throw new Exception("Error while getting content");
+                throw new FileException("read the content of", FileException::getPathOfFile($this));
             }
             $content .= $currentContent;
         }
@@ -161,22 +161,22 @@ abstract class AbstractFile
     }
 
     /**
-     * @throws Exception "Error while reading"
+     * @throws FileException
      */
     abstract public function read(int $length): string;
 
     /**
-     * @throws Exception "Error while writing"
+     * @throws FileException
      */
     abstract public function write(string $data): int;
 
     /**
-     * @throws Exception "Error while seeking"
+     * @throws FileException
      */
     abstract public function seek(int $offset, int $seekType): bool;
 
     /**
-     * @throws Exception "Error while getting pointer position."
+     * @throws FileException
      */
     abstract public function tell(): int;
 }

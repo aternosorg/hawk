@@ -138,7 +138,7 @@ abstract class Section
      * @codeCoverageIgnore
      * @param McCoordinates3D $coordinates
      * @return DataBlock Block at $coordinates
-     * @throws Exception "Result is null."
+     * @throws Exception
      */
     abstract public function getBlock(McCoordinates3D $coordinates): DataBlock;
 

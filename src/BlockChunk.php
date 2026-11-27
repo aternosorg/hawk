@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Aternos\Hawk;
 
+use Aternos\Hawk\Exceptions\SectionNotFoundException;
 use Aternos\Hawk\Exceptions\VersionNotSupportedException;
 use Aternos\Nbt\IO\Writer\ZLibCompressedStringWriter;
 use Aternos\Nbt\NbtFormat;
@@ -61,6 +62,7 @@ abstract class BlockChunk extends Chunk
 
     /**
      * @return void
+     * @throws SectionNotFoundException
      * @throws Exception
      */
     public function loadSections(): void
@@ -78,7 +80,7 @@ abstract class BlockChunk extends Chunk
             }
             return;
         }
-        throw new Exception("No section loaded.");
+        throw new SectionNotFoundException("Chunk " . $this->coordinates . " has no sections.");
     }
 
     /**
@@ -121,6 +123,8 @@ abstract class BlockChunk extends Chunk
     /**
      * @param McCoordinates3D $coordinates
      * @return DataBlock
+     * @throws VersionNotSupportedException
+     * @throws SectionNotFoundException
      * @throws Exception
      */
     public function getBlock(McCoordinates3D $coordinates): DataBlock
@@ -130,7 +134,7 @@ abstract class BlockChunk extends Chunk
         }
         $section = $this->getSection($coordinates);
         if ($section === null) {
-            throw new Exception("No such section.");
+            throw new SectionNotFoundException("Chunk " . $this->coordinates . " has no section containing block " . $coordinates . ".");
         }
         return $section->getBlock($coordinates);
     }

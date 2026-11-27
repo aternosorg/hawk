@@ -9,8 +9,11 @@ use Aternos\Hawk\BlockRegion;
 use Aternos\Hawk\DataBlock;
 use Aternos\Hawk\EntitiesRegion;
 use Aternos\Hawk\Entity;
+use Aternos\Hawk\Exceptions\InvalidRegionFilesException;
+use Aternos\Hawk\Exceptions\RegionNotFoundException;
 use Aternos\Hawk\Exceptions\VersionNotSupportedException;
 use Aternos\Hawk\Hawk;
+use Aternos\Hawk\McCoordinates3D;
 use Aternos\Hawk\Property;
 use Exception;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -19,19 +22,42 @@ class HawkTest extends HawkTestCase
 {
     public function testConstructorThrowsExceptionWithEmptyArrays(): void
     {
-        $this->expectException(Exception::class);
+        $this->expectException(InvalidRegionFilesException::class);
         $this->expectExceptionMessage("Neither block files nor entities files found.");
         new Hawk([], []);
     }
 
-    public function testConstructorThrowsExceptionWithWrongFileTypes(): void
+    public function testConstructorThrowsExceptionWithWrongBlockFileType(): void
     {
-        $this->expectException(Exception::class);
-        $this->expectExceptionMessage("Wrong file type for block files.");
+        $this->expectException(InvalidRegionFilesException::class);
+        $this->expectExceptionMessage("Block file is a Aternos\\Hawk\\Property, expected Aternos\\Hawk\\AbstractFile.");
         new Hawk([new Property("lit", "true")], []);
-        $this->expectException(Exception::class);
-        $this->expectExceptionMessage("Wrong file type for entities files.");
-        new Hawk([], new Property("lit", "true"));
+    }
+
+    public function testConstructorThrowsExceptionWithWrongEntitiesFileType(): void
+    {
+        $this->expectException(InvalidRegionFilesException::class);
+        $this->expectExceptionMessage("Entities file is a Aternos\\Hawk\\Property, expected Aternos\\Hawk\\AbstractFile.");
+        new Hawk([], [new Property("lit", "true")]);
+    }
+
+    /**
+     * @param array $blockFiles
+     * @param array $entitiesFiles
+     * @return void
+     * @throws Exception
+     */
+    #[DataProvider('provideSingleBlockFile')]
+    public function testGetBlockOutsideLoadedRegionsThrowsRegionNotFoundException(array $blockFiles, array $entitiesFiles): void
+    {
+        $hawk = new Hawk($blockFiles, $entitiesFiles);
+        try {
+            $this->expectException(RegionNotFoundException::class);
+            $this->expectExceptionMessage("No region file loaded for region 100, 100.");
+            $hawk->getBlock(new McCoordinates3D(100 * 512, 0, 100 * 512));
+        } finally {
+            $this->closeFiles($blockFiles, $entitiesFiles);
+        }
     }
 
     /**

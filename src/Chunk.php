@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Aternos\Hawk;
 
+use Aternos\Hawk\Exceptions\EntityNotFoundException;
+use Aternos\Hawk\Exceptions\UnexpectedTagTypeException;
 use Aternos\Nbt\Tag\CompoundTag;
 use Aternos\Nbt\Tag\ListTag;
 use Aternos\Nbt\Tag\Tag;
@@ -64,7 +66,9 @@ abstract class Chunk
         $this->compressedDataLength = $compressedDataLength;
         $this->compressionScheme = $compressionScheme;
         $this->coordinates = $coordinates;
-        if (!$tag instanceof CompoundTag) throw new Exception("Wrong tag type");
+        if (!$tag instanceof CompoundTag) {
+            throw new UnexpectedTagTypeException("Chunk " . $coordinates . " is a " . get_class($tag) . ", expected a compound tag.");
+        }
         $this->tag = $tag;
         $this->version = $version;
         $this->loadEntities();
@@ -272,12 +276,12 @@ abstract class Chunk
 
     /**
      * @return Entity[]
-     * @throws Exception
+     * @throws EntityNotFoundException
      */
     public function getAllEntities(): array
     {
         if (empty($this->entities)) {
-            throw new Exception("No entities found.");
+            throw new EntityNotFoundException("Chunk " . $this->coordinates . " has no entities.");
         }
         return $this->entities;
     }
@@ -285,7 +289,7 @@ abstract class Chunk
     /**
      * @param Entity $input
      * @return void
-     * @throws Exception
+     * @throws EntityNotFoundException
      */
     public function deleteEntity(Entity $input): void
     {
@@ -295,7 +299,7 @@ abstract class Chunk
                 return;
             }
         }
-        throw new Exception("Entity not found.");
+        throw new EntityNotFoundException("Entity " . $input->getName() . " at " . $input->getCoordinates() . " not found in chunk " . $this->coordinates . ".");
     }
 
     /**

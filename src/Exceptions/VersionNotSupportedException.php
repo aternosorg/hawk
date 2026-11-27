@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Aternos\Hawk\Exceptions;
 
-class VersionNotSupportedException extends \Exception
+class VersionNotSupportedException extends HawkException
 {
     protected string $version;
 
