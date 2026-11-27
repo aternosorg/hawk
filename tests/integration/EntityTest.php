@@ -9,6 +9,11 @@ use PHPUnit\Framework\Attributes\DataProvider;
 
 class EntityTest extends IntegrationTestCase
 {
+    protected static function getTestFilesDirectory(): string
+    {
+        return __DIR__ . "/../files/entities/versions";
+    }
+
     /**
      * @param array $blockFiles
      * @param array $entitiesFiles

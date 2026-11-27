@@ -11,7 +11,6 @@ use Aternos\Nbt\IO\Writer\StringWriter;
 use Aternos\Nbt\NbtFormat;
 use DirectoryIterator;
 use Exception;
-use ReflectionClass;
 
 /**
  * Integration tests are split into several classes, so they can run in parallel
@@ -59,15 +58,13 @@ abstract class IntegrationTestCase extends HawkTestCase
     }
 
     /**
-     * Every test class copies the example worlds into a directory of its own,
-     * so test classes running in parallel processes do not change each other's files
+     * Directory that this test class copies the example worlds into.
+     * Every test class needs a directory of its own, so test classes running in parallel processes
+     * do not change each other's files.
      *
-     * @return string e.g. "tests/files/BlockTest/versions"
+     * @return string e.g. "tests/files/blocks/versions"
      */
-    protected static function getTestFilesDirectory(): string
-    {
-        return __DIR__ . "/../files/" . (new ReflectionClass(static::class))->getShortName() . "/versions";
-    }
+    abstract protected static function getTestFilesDirectory(): string;
 
     protected static function copyTestFiles(?string $src = null, ?string $dst = null): void
     {

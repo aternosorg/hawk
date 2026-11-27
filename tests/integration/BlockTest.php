@@ -11,6 +11,11 @@ use PHPUnit\Framework\Attributes\DataProvider;
 
 class BlockTest extends IntegrationTestCase
 {
+    protected static function getTestFilesDirectory(): string
+    {
+        return __DIR__ . "/../files/blocks/versions";
+    }
+
     /**
      * @param array $blockFiles
      * @param array $entitiesFiles
