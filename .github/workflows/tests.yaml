@@ -146,8 +146,9 @@ jobs:
       - name: Install composer dependencies
         run: composer install --no-interaction --prefer-dist --no-progress
 
+      # Runs one process per CPU core, every test class goes to one process
       - name: Run phpunit tests
-        run: vendor/bin/phpunit --colors=always --testdox
+        run: vendor/bin/paratest --colors=always --testdox
 
   delete-snapshot-branch:
     runs-on: ubuntu-latest
