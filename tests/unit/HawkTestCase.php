@@ -104,6 +104,18 @@ class HawkTestCase extends TestCase
         return new McCoordinatesFloat(-1.5, 64, -1.5);
     }
 
+    /**
+     * Data sets of the version providers are named after the version directory, e.g. "1.15.2" or "latest".
+     * Blocks are supported since 1.13, the first version with block state palettes.
+     *
+     * @return bool
+     */
+    protected function areBlocksSupportedInDataSet(): bool
+    {
+        $version = (string)$this->dataName();
+        return $version === "latest" || version_compare($version, "1.13", ">=");
+    }
+
     public function getBlockRegion(AbstractFile $blockfile): BlockRegion
     {
         return new BlockRegion($blockfile);

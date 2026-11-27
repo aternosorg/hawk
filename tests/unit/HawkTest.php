@@ -277,14 +277,12 @@ class HawkTest extends HawkTestCase
     public function testGetBlock(array $blockFiles, array $entitiesFiles): void
     {
         $hawk = new Hawk($blockFiles, $entitiesFiles);
-        try {
-            $block = $hawk->getBlock($this->getBlockCoords());
-            $this->assertInstanceOf(DataBlock::class, $block);
-            $this->assertEquals("minecraft:furnace", $block->getPaletteBlock()->getName());
-        } catch (VersionNotSupportedException $e) {
+        if (!$this->areBlocksSupportedInDataSet()) {
             $this->expectException(VersionNotSupportedException::class);
-            $hawk->getBlock($this->getBlockCoords());
         }
+        $block = $hawk->getBlock($this->getBlockCoords());
+        $this->assertInstanceOf(DataBlock::class, $block);
+        $this->assertEquals("minecraft:furnace", $block->getPaletteBlock()->getName());
         $this->closeFiles($blockFiles, $entitiesFiles);
     }
 
@@ -298,14 +296,12 @@ class HawkTest extends HawkTestCase
     public function testReplaceBlock(array $blockFiles, array $entitiesFiles): void
     {
         $hawk = new Hawk($blockFiles, $entitiesFiles);
-        try {
-            $block = $hawk->getBlock($this->getBlockCoords());
-        } catch (VersionNotSupportedException $e) {
+        if (!$this->areBlocksSupportedInDataSet()) {
             $this->expectException(VersionNotSupportedException::class);
-            $hawk->getBlock($this->getBlockCoords());
         }
+        $block = $hawk->getBlock($this->getBlockCoords());
+        $this->assertEquals("minecraft:furnace", $block->getPaletteBlock()->getName());
         $hawk->replaceBlock($this->getBlockCoords(), "minecraft:wool");
-        $this->assertInstanceOf(DataBlock::class, $block);
         $this->assertEquals("minecraft:wool", $hawk->getBlock($this->getBlockCoords())->getPaletteBlock()->getName());
         $this->closeFiles($blockFiles, $entitiesFiles);
     }

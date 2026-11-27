@@ -91,6 +91,31 @@ abstract class Section
      */
     abstract protected static function newPalette(array $paletteBlocks): Palette;
 
+    /**
+     * Uses $tag as the base when this section is written, so that entries
+     * Hawk does not handle (e.g. "BlockLight" and "SkyLight") are kept
+     *
+     * @param CompoundTag $tag
+     * @return void
+     */
+    public function setTag(CompoundTag $tag): void
+    {
+        $this->tag = $tag;
+    }
+
+    /**
+     * Returns the tag this section was read from, or a new tag for a new section.
+     * createTag() only overwrites the entries for blocks, so all other entries are kept.
+     *
+     * @return CompoundTag
+     */
+    protected function getBaseTag(): CompoundTag
+    {
+        if (isset($this->tag)) {
+            return $this->tag;
+        }
+        return new CompoundTag();
+    }
 
     /**
      * @return McCoordinates3D

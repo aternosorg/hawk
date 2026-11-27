@@ -6,6 +6,7 @@ namespace Aternos\Hawk;
 
 use Aternos\Hawk\Versions\v2860\DataV2860;
 use Aternos\Nbt\Tag\CompoundTag;
+use Aternos\Nbt\Tag\ListTag;
 use Exception;
 
 class BlockState
@@ -37,7 +38,7 @@ class BlockState
     {
         $blockState = new static();
         $blockState->version = $version;
-        $blockState->palette = Palette::newFromTag($tag->getList($blockState->paletteTagName));
+        $blockState->palette = static::newPaletteFromTag($tag->getList($blockState->paletteTagName));
         $blockState->data = DataV2860::newFromTag($tag->getLongArray($blockState->dataTagName), $blockState->palette, $blockState->version, $sectionY);
         return $blockState;
     }
@@ -55,6 +56,25 @@ class BlockState
         $blockState->palette = $palette;
         $blockState->data = $data;
         return $blockState;
+    }
+
+    /**
+     * @param ListTag $tag
+     * @return Palette
+     */
+    protected static function newPaletteFromTag(ListTag $tag): Palette
+    {
+        return Palette::newFromTag($tag);
+    }
+
+    /**
+     * @param string $name
+     * @param array $properties
+     * @return PaletteBlock
+     */
+    protected function newPaletteBlock(string $name, array $properties): PaletteBlock
+    {
+        return PaletteBlock::new($name, $properties);
     }
 
     /**
@@ -96,7 +116,7 @@ class BlockState
      */
     public function createPaletteBlock(string $name = "minecraft:air", array $properties = []): PaletteBlock
     {
-        $paletteBlock = PaletteBlock::new($name, $properties);
+        $paletteBlock = $this->newPaletteBlock($name, $properties);
         $this->palette->addPaletteBlock($paletteBlock);
         return $paletteBlock;
     }
@@ -123,7 +143,7 @@ class BlockState
      * @return CompoundTag
      * @throws Exception
      */
-    public function createTag(int $section = null): CompoundTag
+    public function createTag(?int $section = null): CompoundTag
     {
         $blockState = new CompoundTag();
         $palette = $this->palette->createTag();

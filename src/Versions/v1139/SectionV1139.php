@@ -6,23 +6,23 @@ namespace Aternos\Hawk\Versions\v1139;
 
 use Aternos\Hawk\Data;
 use Aternos\Hawk\DataBlock;
+use Aternos\Hawk\Exceptions\VersionNotSupportedException;
 use Aternos\Hawk\McCoordinates2D;
 use Aternos\Hawk\McCoordinates3D;
 use Aternos\Hawk\Palette;
 use Aternos\Hawk\PaletteBlock;
 use Aternos\Hawk\Section;
-use Aternos\Nbt\Tag\ByteTag;
 use Aternos\Nbt\Tag\CompoundTag;
-use Aternos\Nbt\Tag\ListTag;
 
+/**
+ * Sections before the flattening (1.13) store numeric block ids instead of a palette.
+ * Reading or changing blocks is not supported, the section is only kept as its raw tag
+ * so that it is written back unchanged.
+ */
 class SectionV1139 extends Section
 {
-    protected Palette $palette;
-
-    protected Data $data;
-
     /**
-     * Overloaded with new and newFromTag
+     * Overloaded with newFromTag
      */
     protected function __construct()
     {
@@ -31,25 +31,11 @@ class SectionV1139 extends Section
 
     /**
      * @inheritDoc
+     * @throws VersionNotSupportedException
      */
     public static function newEmpty(McCoordinates3D $coordinates, int $version): Section
     {
-        $section = new static();
-        $section->coordinates = $coordinates;
-        $section->version = $version;
-
-        $paletteBlocks[] = PaletteBlock::new();
-        $section->palette = static::newPalette($paletteBlocks);
-
-
-        $dataBlocks = [];
-        $dataBlock = new DataBlock(0, $paletteBlocks[0]);
-        for ($i = 0; $i < static::BLOCKS_PER_SECTION; $i++) {
-            $dataBlocks[] = $dataBlock;
-        }
-
-        $section->data = static::newData($dataBlocks);
-        return $section;
+        throw new VersionNotSupportedException((string)$version);
     }
 
     /**
@@ -65,65 +51,48 @@ class SectionV1139 extends Section
     }
 
     /**
-     * @param array $dataBlocks
-     * @return Data
+     * @inheritDoc
+     * @throws VersionNotSupportedException
      */
     protected static function newData(array $dataBlocks): Data
     {
-        return DataV1139::new($dataBlocks);
+        throw new VersionNotSupportedException("pre-1.13");
     }
 
     /**
-     * @param Section $section
-     * @param CompoundTag $tag
-     * @param int $sectionY
-     * @return Data
+     * @inheritDoc
+     * @throws VersionNotSupportedException
      */
     protected static function newDataFromTag(Section $section, CompoundTag $tag, int $sectionY): Data
     {
-        return DataV1139::newFromTag($tag->getLongArray($section->dataTagName), $section->palette, $section->version, $sectionY);
+        throw new VersionNotSupportedException((string)$section->version);
     }
 
     /**
-     * @param array $paletteBlocks
-     * @return Palette
+     * @inheritDoc
+     * @throws VersionNotSupportedException
      */
     protected static function newPalette(array $paletteBlocks): Palette
     {
-        return Palette::new($paletteBlocks);
-    }
-
-    /**
-     * @param ListTag $paletteTag
-     * @return Palette
-     */
-    protected static function newPaletteFromTag(ListTag $paletteTag): Palette
-    {
-        return Palette::newFromTag($paletteTag);
+        throw new VersionNotSupportedException("pre-1.13");
     }
 
     /**
      * @inheritDoc
+     * @throws VersionNotSupportedException
      */
     public function getBlock(McCoordinates3D $coordinates): DataBlock
     {
-        $index = $this->calcDataBlocksIndex(Section::getBlockCoordinates($coordinates));
-
-        // If section is empty
-        if (isset($this->palette) && $this->getPalette()->getLength() === 1 && $this->getPalette()->getPaletteBlocks()[0]->getName() === "minecraft:air") {
-            return new DataBlock(0, $this->getPalette()->getPaletteBlocks()[0]);
-        }
-        return $this->getData()->getDataBlock($index);
+        throw new VersionNotSupportedException((string)$this->version);
     }
 
     /**
      * @inheritDoc
+     * @throws VersionNotSupportedException
      */
     public function replaceBlock(McCoordinates3D $coordinates, string $blockName = "minecraft:stone"): void
     {
-        $index = $this->calcDataBlocksIndex(Section::getBlockCoordinates($coordinates));
-        $dataBlock = $this->createDataBlock($blockName);
-        $this->getData()->setDataBlock($index, $dataBlock);
+        throw new VersionNotSupportedException((string)$this->version);
     }
 
     /**
@@ -131,56 +100,24 @@ class SectionV1139 extends Section
      */
     public function createTag(): CompoundTag
     {
-        $section = new CompoundTag();
-        $section->set("Y", (new ByteTag())->setValue($this->coordinates->y));
-        if(!isset($this->data)) {
-            return $this->tag;
-        }
-        $section->set($this->dataTagName, $this->data->createTag($this->getPalette()->getLength(), $this->coordinates->y));
-        $section->set($this->paletteTagName, $this->palette->createTag());
-        return $section;
+        return $this->tag;
     }
 
     /**
-     * @return Palette
-     */
-    public function getPalette(): Palette
-    {
-        return $this->palette;
-    }
-
-    /**
-     * @return Data
-     */
-    public function getData(): Data
-    {
-        return $this->data;
-    }
-
-    /**
-     * @param string $name
-     * @param array $properties
-     * @return PaletteBlock
+     * @inheritDoc
+     * @throws VersionNotSupportedException
      */
     public function createPaletteBlock(string $name = "minecraft:air", array $properties = []): PaletteBlock
     {
-        $paletteBlock = PaletteBlock::new($name, $properties);
-        $this->getPalette()->addPaletteBlock($paletteBlock);
-        return $paletteBlock;
+        throw new VersionNotSupportedException((string)$this->version);
     }
 
     /**
-     * @param string $blockName
-     * @return DataBlock
+     * @inheritDoc
+     * @throws VersionNotSupportedException
      */
     public function createDataBlock(string $blockName = "minecraft:stone"): DataBlock
     {
-        $paletteBlock = $this->getPalette()->findPaletteBlock($blockName);
-        if ($paletteBlock === null) {
-            $paletteBlock = $this->createPaletteBlock($blockName);
-        }
-        $arraySearch = array_search($paletteBlock, $this->palette->getPaletteBlocks());
-
-        return new DataBlock($arraySearch, $this->getPalette()->getPaletteBlocks()[$arraySearch]);
+        throw new VersionNotSupportedException((string)$this->version);
     }
 }

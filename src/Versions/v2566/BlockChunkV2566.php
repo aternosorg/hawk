@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Aternos\Hawk\Versions\v2566;
 
-use Aternos\Hawk\BlockChunk;
+use Aternos\Hawk\Versions\v1519\BlockChunkV1519;
 use Aternos\Hawk\McCoordinates2D;
 use Aternos\Hawk\McCoordinates3D;
 use Aternos\Hawk\Section;
 use Aternos\Nbt\Tag\CompoundTag;
 
-class BlockChunkV2566 extends BlockChunk
+class BlockChunkV2566 extends BlockChunkV1519
 {
     /**
      * @param CompoundTag $tag
