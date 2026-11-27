@@ -16,12 +16,8 @@ use PHPUnit\Framework\TestCase;
 
 class HawkTestCase extends TestCase
 {
-    protected function closeFiles(array $blockFiles, array $entitiesFiles) {
-        $this->files = array_reverse($this->files);
-        foreach ($this->files as $index => $file) {
-            $file->close();
-            unset($this->files[$index]);
-        }
+    protected function closeFiles(array $blockFiles, array $entitiesFiles): void
+    {
         foreach ($blockFiles as $blockFile) {
             $blockFile->close();
         }
@@ -29,11 +25,6 @@ class HawkTestCase extends TestCase
             $entitiesFile->close();
         }
     }
-
-    /**
-     * @var File[]
-     */
-    public array $files = [];
 
     public const VERSIONS_WITHOUT_ENTITIES_FILES = [
         "1.12",
@@ -146,7 +137,7 @@ class HawkTestCase extends TestCase
      * @return array
      * @throws Exception
      */
-    public function provideSingleBlockFile(): array
+    public static function provideSingleBlockFile(): array
     {
         $blockFiles = [];
         $versions = new DirectoryIterator(__DIR__ . "/../../examples/resources/versions");
@@ -154,11 +145,9 @@ class HawkTestCase extends TestCase
             if (!$version->isDot()) {
                 $dirName = $version->getFilename();
                 $regionFile = new File(__DIR__ . "/../../examples/resources/versions/" . $dirName . "/region/r.0.0.mca");
-                $this->files[] = $regionFile;
                 $entityFile = null;
                 if (version_compare($dirName, "1.17", ">=") || $dirName === "latest") {
                     $entityFile = new File(__DIR__ . "/../../examples/resources/versions/" . $dirName . "/entities/r.0.0.mca");
-                    $this->files[] = $entityFile;
                 }
                 $blockFiles[$dirName] = [
                     [$regionFile],
@@ -173,7 +162,7 @@ class HawkTestCase extends TestCase
      * @return array
      * @throws Exception
      */
-    public function provideNegativeSingleBlockFile(): array
+    public static function provideNegativeSingleBlockFile(): array
     {
         $blockFiles = [];
         $versions = new DirectoryIterator(__DIR__ . "/../../examples/resources/versions");
@@ -181,11 +170,9 @@ class HawkTestCase extends TestCase
             if (!$version->isDot()) {
                 $dirName = $version->getFilename();
                 $regionFile = new File(__DIR__ . "/../../examples/resources/versions/" . $dirName . "/region/r.-1.-1.mca");
-                $this->files[] = $regionFile;
                 $entityFile = null;
                 if (version_compare($dirName, "1.17", ">=") || $dirName === "latest") {
                     $entityFile = new File(__DIR__ . "/../../examples/resources/versions/" . $dirName . "/entities/r.-1.-1.mca");
-                    $this->files[] = $entityFile;
                 }
                 $blockFiles[$dirName] = [
                     [$regionFile],
@@ -196,7 +183,7 @@ class HawkTestCase extends TestCase
         return $blockFiles;
     }
 
-    public function provideMultipleBlockFiles(): array
+    public static function provideMultipleBlockFiles(): array
     {
         $blockFiles = [];
         $versions = new DirectoryIterator(__DIR__ . "/../../examples/resources/versions");
@@ -207,16 +194,12 @@ class HawkTestCase extends TestCase
                 $regionFile = new File(__DIR__ . "/../../examples/resources/versions/" . $dirName . "/region/r.0.0.mca");
                 $regionFileTwo = new File(__DIR__ . "/../../examples/resources/versions/" . $dirName . "/region/r.-1.-1.mca");
                 $blockFiles[$dirName][] = [$regionFile, $regionFileTwo];
-                $this->files[] = $regionFile;
-                $this->files[] = $regionFileTwo;
                 $entityFile = null;
                 $entityFileTwo = null;
                 if (version_compare($dirName, "1.17", ">=") || $dirName === "latest") {
                     $entityFile = new File(__DIR__ . "/../../examples/resources/versions/" . $dirName . "/entities/r.0.0.mca");
                     $entityFileTwo = new File(__DIR__ . "/../../examples/resources/versions/" . $dirName . "/entities/r.-1.-1.mca");
                     $blockFiles[$dirName][] = [$entityFile, $entityFileTwo];
-                    $this->files[] = $entityFile;
-                    $this->files[] = $entityFileTwo;
                 } else {
                     $blockFiles[$dirName][] = [];
                 }
@@ -225,7 +208,7 @@ class HawkTestCase extends TestCase
         return $blockFiles;
     }
 
-    public function provideMultipleEqualBlockFiles(): array
+    public static function provideMultipleEqualBlockFiles(): array
     {
         $blockFiles = [];
         $versions = new DirectoryIterator(__DIR__ . "/../../examples/resources/versions");
@@ -236,22 +219,17 @@ class HawkTestCase extends TestCase
                 $regionFile = new File(__DIR__ . "/../../examples/resources/versions/" . $dirName . "/region/r.0.0.mca");
                 $regionFileTwo = new File(__DIR__ . "/../../examples/resources/versions/" . $dirName . "/region/r.0.0.mca");
                 $blockFiles[$dirName][] = [$regionFile, $regionFileTwo];
-                $this->files[] = $regionFile;
-                $this->files[] = $regionFileTwo;
                 $entityFile = null;
                 $entityFileTwo = null;
                 if (version_compare($dirName, "1.17", ">=") || $dirName === "latest") {
                     $entityFile = new File(__DIR__ . "/../../examples/resources/versions/" . $dirName . "/entities/r.0.0.mca");
                     $entityFileTwo = new File(__DIR__ . "/../../examples/resources/versions/" . $dirName . "/entities/r.0.0.mca");
                     $blockFiles[$dirName][] = [$entityFile, $entityFileTwo];
-                    $this->files[] = $entityFile;
-                    $this->files[] = $entityFileTwo;
                 } else {
                     $blockFiles[$dirName][] = [];
                 }
             }
         }
-        $this->files = array_merge($this->files, $blockFiles);
         return $blockFiles;
     }
 

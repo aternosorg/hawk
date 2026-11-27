@@ -8,6 +8,7 @@ use Aternos\Hawk\PaletteBlock;
 use Aternos\Hawk\Section;
 use Aternos\Hawk\Versions\v1519\DataV1519;
 use Aternos\Nbt\Tag\LongArrayTag;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class DataV1519Test extends TestCase
@@ -59,7 +60,7 @@ class DataV1519Test extends TestCase
     /**
      * @return array[]
      */
-    public function provideIds(): array
+    public static function provideIds(): array
     {
         $everyId = [];
         for ($index = 0; $index < Section::BLOCKS_PER_SECTION; $index++) {
@@ -94,12 +95,12 @@ class DataV1519Test extends TestCase
     }
 
     /**
-     * @dataProvider provideIds
      * @param int[] $ids
      * @param int $paletteLength
      * @param int $bitLength bits per block that Minecraft uses for this palette length
      * @return void
      */
+    #[DataProvider('provideIds')]
     public function testReadsIndicesSpanningTwoLongs(array $ids, int $paletteLength, int $bitLength): void
     {
         $palette = $this->createPalette($paletteLength);
@@ -138,12 +139,12 @@ class DataV1519Test extends TestCase
     }
 
     /**
-     * @dataProvider provideIds
      * @param int[] $ids
      * @param int $paletteLength
      * @param int $bitLength bits per block that Minecraft uses for this palette length
      * @return void
      */
+    #[DataProvider('provideIds')]
     public function testWritesIndicesSpanningTwoLongs(array $ids, int $paletteLength, int $bitLength): void
     {
         $data = $this->createData($ids, $this->createPalette($paletteLength));
@@ -156,7 +157,7 @@ class DataV1519Test extends TestCase
     /**
      * @return array[]
      */
-    public function provideBitLengths(): array
+    public static function provideBitLengths(): array
     {
         return [
             "4 bits" => [16, 4],
@@ -167,11 +168,11 @@ class DataV1519Test extends TestCase
     }
 
     /**
-     * @dataProvider provideBitLengths
      * @param int $paletteLength
      * @param int $bitLength bits per block that Minecraft uses for this palette length
      * @return void
      */
+    #[DataProvider('provideBitLengths')]
     public function testReadsWhatItWrote(int $paletteLength, int $bitLength): void
     {
         $palette = $this->createPalette($paletteLength);

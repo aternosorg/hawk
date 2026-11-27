@@ -6,6 +6,7 @@ use Aternos\Hawk\PaletteBlock;
 use Aternos\Hawk\Property;
 use Aternos\Nbt\Tag\StringTag;
 use Exception;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class PaletteBlockTest extends HawkTestCase
@@ -14,7 +15,7 @@ class PaletteBlockTest extends HawkTestCase
     /**
      * @return array[]
      */
-    public function provideNew():array
+    public static function provideNew():array
     {
         return [
           "default" => ["minecraft:air"],
@@ -24,7 +25,7 @@ class PaletteBlockTest extends HawkTestCase
         ];
     }
 
-    public function providePaletteBlocks(): array
+    public static function providePaletteBlocks(): array
     {
         return [
             "air" => [PaletteBlock::new()],
@@ -37,11 +38,11 @@ class PaletteBlockTest extends HawkTestCase
     }
 
     /**
-     * @dataProvider provideNew
      * @param string $blockName
      * @param array $properties
      * @return void
      */
+    #[DataProvider('provideNew')]
     public function testNew(string $blockName, array $properties = []): void
     {
         $paletteBlock = PaletteBlock::new($blockName, $properties);
@@ -49,11 +50,11 @@ class PaletteBlockTest extends HawkTestCase
     }
 
     /**
-     * @dataProvider providePaletteBlocks
      * @param PaletteBlock $paletteBlock
      * @return void
      * @throws Exception
      */
+    #[DataProvider('providePaletteBlocks')]
     public function testCreateTag(PaletteBlock $paletteBlock): void
     {
         $this->assertEquals($paletteBlock->getName(), $paletteBlock->createTag()->getString("Name")->getValue());

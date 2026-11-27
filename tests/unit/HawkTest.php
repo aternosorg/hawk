@@ -11,6 +11,7 @@ use Aternos\Hawk\Exceptions\VersionNotSupportedException;
 use Aternos\Hawk\Hawk;
 use Aternos\Hawk\Property;
 use Exception;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class HawkTest extends HawkTestCase
 {
@@ -32,12 +33,12 @@ class HawkTest extends HawkTestCase
     }
 
     /**
-     * @dataProvider provideSingleBlockFile
      * @param array $blockFiles
      * @param array $entitiesFiles
      * @return void
      * @throws Exception
      */
+    #[DataProvider('provideSingleBlockFile')]
     public function testConstructorCallsLoadBlockRegions(array $blockFiles, array $entitiesFiles): void
     {
         $mock = $this->getMockBuilder(Hawk::class)
@@ -55,12 +56,12 @@ class HawkTest extends HawkTestCase
     }
 
     /**
-     * @dataProvider provideSingleBlockFile
      * @param array $blockFiles
      * @param array $entitiesFiles
      * @return void
      * @throws Exception
      */
+    #[DataProvider('provideSingleBlockFile')]
     public function testLoadBlockRegionsEmptyBlockRegions(array $blockFiles, array $entitiesFiles): void
     {
         $hawk = new Hawk($blockFiles, $entitiesFiles);
@@ -72,12 +73,12 @@ class HawkTest extends HawkTestCase
     }
 
     /**
-     * @dataProvider provideMultipleBlockFiles
      * @param array $blockFiles
      * @param array $entitiesFiles
      * @return void
      * @throws Exception
      */
+    #[DataProvider('provideMultipleBlockFiles')]
     public function testLoadBlockRegionsMultipleFiles(array $blockFiles, array $entitiesFiles): void
     {
         $hawk = new Hawk($blockFiles, $entitiesFiles);
@@ -91,12 +92,12 @@ class HawkTest extends HawkTestCase
     }
 
     /**
-     * @dataProvider provideMultipleEqualBlockFiles
      * @param array $blockFiles
      * @param array $entitiesFiles
      * @return void
      * @throws Exception
      */
+    #[DataProvider('provideMultipleEqualBlockFiles')]
     public function testLoadBlockRegionsMultipleEqualFiles(array $blockFiles, array $entitiesFiles): void
     {
         $hawk = new Hawk($blockFiles, $entitiesFiles);
@@ -110,12 +111,12 @@ class HawkTest extends HawkTestCase
     }
 
     /**
-     * @dataProvider provideSingleBlockFile
      * @param array $blockFiles
      * @param array $entitiesFiles
      * @return void
      * @throws Exception
      */
+    #[DataProvider('provideSingleBlockFile')]
     public function testLoadEntitiesRegionsEmptyEntitiesRegions(array $blockFiles, array $entitiesFiles): void
     {
         $hawk = new Hawk($blockFiles, $entitiesFiles);
@@ -131,12 +132,12 @@ class HawkTest extends HawkTestCase
     }
 
     /**
-     * @dataProvider provideMultipleBlockFiles
      * @param array $blockFiles
      * @param array $entitiesFiles
      * @return void
      * @throws Exception
      */
+    #[DataProvider('provideMultipleBlockFiles')]
     public function testLoadEntitiesRegionsMultipleFiles(array $blockFiles, array $entitiesFiles): void
     {
         $hawk = new Hawk($blockFiles, $entitiesFiles);
@@ -155,12 +156,12 @@ class HawkTest extends HawkTestCase
 
 
     /**
-     * @dataProvider provideMultipleEqualBlockFiles
      * @param array $blockFiles
      * @param array $entitiesFiles
      * @return void
      * @throws Exception
      */
+    #[DataProvider('provideMultipleEqualBlockFiles')]
     public function testLoadEntitiesRegionsMultipleEqualFiles(array $blockFiles, array $entitiesFiles): void
     {
         $hawk = new Hawk($blockFiles, $entitiesFiles);
@@ -178,12 +179,12 @@ class HawkTest extends HawkTestCase
     }
 
     /**
-     * @dataProvider provideMultipleBlockFiles
      * @param array $blockFiles
      * @param array $entitiesFiles
      * @return void
      * @throws Exception
      */
+    #[DataProvider('provideMultipleBlockFiles')]
     public function testGetBlockRegionFromBlock(array $blockFiles, array $entitiesFiles): void
     {
         $hawk = new Hawk($blockFiles, $entitiesFiles);
@@ -197,12 +198,12 @@ class HawkTest extends HawkTestCase
     }
 
     /**
-     * @dataProvider provideMultipleBlockFiles
      * @param array $blockFiles
      * @param array $entitiesFiles
      * @return void
      * @throws Exception
      */
+    #[DataProvider('provideMultipleBlockFiles')]
     public function testGetEntitiesRegionFromBlock(array $blockFiles, array $entitiesFiles): void
     {
         $hawk = new Hawk($blockFiles, $entitiesFiles);
@@ -222,12 +223,12 @@ class HawkTest extends HawkTestCase
     }
 
     /**
-     * @dataProvider provideMultipleBlockFiles
      * @param array $blockFiles
      * @param array $entitiesFiles
      * @return void
      * @throws Exception
      */
+    #[DataProvider('provideMultipleBlockFiles')]
     public function testGetBlockRegionFromChunk(array $blockFiles, array $entitiesFiles): void
     {
         $hawk = new Hawk($blockFiles, $entitiesFiles);
@@ -241,12 +242,12 @@ class HawkTest extends HawkTestCase
     }
 
     /**
-     * @dataProvider provideMultipleBlockFiles
      * @param array $blockFiles
      * @param array $entitiesFiles
      * @return void
      * @throws Exception
      */
+    #[DataProvider('provideMultipleBlockFiles')]
     public function testGetEntitiesRegionFromChunk(array $blockFiles, array $entitiesFiles): void
     {
         $hawk = new Hawk($blockFiles, $entitiesFiles);
@@ -265,12 +266,12 @@ class HawkTest extends HawkTestCase
     }
 
     /**
-     * @dataProvider provideMultipleBlockFiles
      * @param array $blockFiles
      * @param array $entitiesFiles
      * @return void
      * @throws Exception
      */
+    #[DataProvider('provideMultipleBlockFiles')]
     public function testGetBlock(array $blockFiles, array $entitiesFiles): void
     {
         $hawk = new Hawk($blockFiles, $entitiesFiles);
@@ -284,12 +285,12 @@ class HawkTest extends HawkTestCase
     }
 
     /**
-     * @dataProvider provideMultipleBlockFiles
      * @param array $blockFiles
      * @param array $entitiesFiles
      * @return void
      * @throws Exception
      */
+    #[DataProvider('provideMultipleBlockFiles')]
     public function testReplaceBlock(array $blockFiles, array $entitiesFiles): void
     {
         $hawk = new Hawk($blockFiles, $entitiesFiles);
@@ -304,12 +305,12 @@ class HawkTest extends HawkTestCase
     }
 
     /**
-     * @dataProvider provideMultipleBlockFiles
      * @param array $blockFiles
      * @param array $entitiesFiles
      * @return void
      * @throws Exception
      */
+    #[DataProvider('provideMultipleBlockFiles')]
     public function testGetAllEntitiesFromChunk(array $blockFiles, array $entitiesFiles): void
     {
         $hawk = new Hawk($blockFiles, $entitiesFiles);
@@ -320,12 +321,12 @@ class HawkTest extends HawkTestCase
     }
 
     /**
-     * @dataProvider provideMultipleBlockFiles
      * @param array $blockFiles
      * @param array $entitiesFiles
      * @return void
      * @throws Exception
      */
+    #[DataProvider('provideMultipleBlockFiles')]
     public function testGetEntities(array $blockFiles, array $entitiesFiles): void
     {
         $hawk = new Hawk($blockFiles, $entitiesFiles);
@@ -336,12 +337,12 @@ class HawkTest extends HawkTestCase
     }
 
     /**
-     * @dataProvider provideMultipleBlockFiles
      * @param array $blockFiles
      * @param array $entitiesFiles
      * @return void
      * @throws Exception
      */
+    #[DataProvider('provideMultipleBlockFiles')]
     public function testDeleteEntity(array $blockFiles, array $entitiesFiles): void
     {
         $hawk = new Hawk($blockFiles, $entitiesFiles);
@@ -354,12 +355,12 @@ class HawkTest extends HawkTestCase
     }
 
     /**
-     * @dataProvider provideMultipleBlockFiles
      * @param array $blockFiles
      * @param array $entitiesFiles
      * @return void
      * @throws Exception
      */
+    #[DataProvider('provideMultipleBlockFiles')]
     public function testGetAllBlockEntitiesFromChunk(array $blockFiles, array $entitiesFiles): void
     {
         $hawk = new Hawk($blockFiles, $entitiesFiles);
@@ -370,12 +371,12 @@ class HawkTest extends HawkTestCase
     }
 
     /**
-     * @dataProvider provideMultipleBlockFiles
      * @param array $blockFiles
      * @param array $entitiesFiles
      * @return void
      * @throws Exception
      */
+    #[DataProvider('provideMultipleBlockFiles')]
     public function testGetBlockEntities(array $blockFiles, array $entitiesFiles): void
     {
         $hawk = new Hawk($blockFiles, $entitiesFiles);
@@ -386,12 +387,12 @@ class HawkTest extends HawkTestCase
     }
 
     /**
-     * @dataProvider provideMultipleBlockFiles
      * @param array $blockFiles
      * @param array $entitiesFiles
      * @return void
      * @throws Exception
      */
+    #[DataProvider('provideMultipleBlockFiles')]
     public function testDeleteBlockEntity(array $blockFiles, array $entitiesFiles): void
     {
         $hawk = new Hawk($blockFiles, $entitiesFiles);
