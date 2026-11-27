@@ -12,11 +12,20 @@ on:
       VERSION:
         required: true
 
+# A new push to a pull request makes its older runs obsolete.
+# All other runs get a group of their own (the run ID), because even without cancel-in-progress,
+# a newer run would replace a pending run of the same group, e.g. a manual run that commits new worlds.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.ref || github.run_id }}
+  cancel-in-progress: true
+
 env:
   VERSIONS_LOCATION: "examples/resources/versions/"
 jobs:
 
   is-in-repo:
+    # Only manual runs create new worlds, all other runs skip this and create-world
+    if: ${{ github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-latest
     permissions: read-all
 
@@ -133,9 +142,6 @@ jobs:
           path: ${{ steps.composer-cache.outputs.dir }}
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
           restore-keys: ${{ runner.os }}-composer-
-
-      - name: Update composer
-        run: composer update
 
       - name: Install composer dependencies
         run: composer install --no-interaction --prefer-dist --no-progress
