@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1273f1f309e1486eb33350874f136f31",
+    "content-hash": "18853f97b6a1c5dd0953799eca7fa4e3",
     "packages": [
         {
             "name": "aternos/nbt",
@@ -3066,8 +3066,7 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=8.4",
-        "ext-readline": "*"
+        "php": ">=8.4"
     },
     "platform-dev": {},
     "plugin-api-version": "2.11.0"
