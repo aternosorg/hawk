@@ -71,6 +71,26 @@ class HawkTestCase extends TestCase
         return new McCoordinates2D(-1, -1);
     }
 
+    /**
+     * Last chunk of region 0,0, so its chunk coordinates differ from its region coordinates
+     *
+     * @return McCoordinates2D
+     */
+    public function getLastChunkInRegionCoords(): McCoordinates2D
+    {
+        return new McCoordinates2D(31, 31);
+    }
+
+    /**
+     * First chunk of region -1,-1, so its chunk coordinates differ from its region coordinates
+     *
+     * @return McCoordinates2D
+     */
+    public function getFirstChunkInNegativeRegionCoords(): McCoordinates2D
+    {
+        return new McCoordinates2D(-32, -32);
+    }
+
     public function getBlockCoords(): McCoordinates3D
     {
         return new McCoordinates3D(1, 1, 1);
