@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Aternos\Hawk\Versions\v5023;
 
 use Aternos\Hawk\Palette;

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 require_once __DIR__ . "/../vendor/autoload.php";
 
 use Aternos\Hawk\File;
@@ -65,7 +67,7 @@ if(count($coordinates) !== 3){
     echo "Wrong coordinates " . PHP_EOL;
     return;
 }
-$blockPos = new McCoordinates3D($coordinates[0], $coordinates[1], $coordinates[2]);
+$blockPos = new McCoordinates3D((int) $coordinates[0], (int) $coordinates[1], (int) $coordinates[2]);
 
 if(!file_exists($outputPath))
 {
