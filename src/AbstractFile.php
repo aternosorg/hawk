@@ -38,7 +38,7 @@ abstract class AbstractFile
      * @param ?string $path
      * @throws Exception
      */
-    public function __construct(string $path = null)
+    public function __construct(?string $path = null)
     {
         if ($path === null) {
             return;

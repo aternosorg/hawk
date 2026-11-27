@@ -42,9 +42,18 @@ class Palette
     {
         $palette = new static();
         foreach ($tag as $block) {
-            $palette->paletteBlocks[] = PaletteBlock::newFromTag($block);
+            $palette->paletteBlocks[] = static::newPaletteBlockFromTag($block);
         }
         return $palette;
+    }
+
+    /**
+     * @param CompoundTag $tag
+     * @return PaletteBlock
+     */
+    protected static function newPaletteBlockFromTag(CompoundTag $tag): PaletteBlock
+    {
+        return PaletteBlock::newFromTag($tag);
     }
 
     /**
@@ -95,7 +104,7 @@ class Palette
     public function createTag(): ListTag
     {
         $palette = new ListTag();
-        $palette->setContentTag(CompoundTag::TYPE);
+        $palette->setContentType(CompoundTag::TYPE);
         foreach ($this->getPaletteBlocks() as $paletteBlock) {
             $palette[] = $paletteBlock->createTag();
         }

@@ -8,7 +8,7 @@ This allows the user to replace blocks or delete entities that will crash the se
 Currently, following versions are supported:
 
     1.12+ for entities
-    1.16+ for blocks
+    1.13+ for blocks
 
 ### Installation
 

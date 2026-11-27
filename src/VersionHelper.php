@@ -3,8 +3,8 @@
 namespace Aternos\Hawk;
 
 
-use Aternos\Hawk\Exceptions\VersionNotSupportedException;
 use Aternos\Hawk\Versions\v1139\BlockChunkV1139;
+use Aternos\Hawk\Versions\v1519\BlockChunkV1519;
 use Aternos\Hawk\Versions\v2566\BlockChunkV2566;
 use Aternos\Hawk\Versions\v2567\BlockChunkV2567;
 use Aternos\Hawk\Versions\v2578\BlockChunkV2578;
@@ -17,13 +17,20 @@ use Aternos\Hawk\Versions\v2860\BlockChunkV2860;
 use Aternos\Hawk\Versions\v2865\BlockChunkV2865;
 use Aternos\Hawk\Versions\v2975\BlockChunkV2975;
 use Aternos\Hawk\Versions\v3105\BlockChunkV3105;
+use Aternos\Hawk\Versions\v5023\BlockChunkV5023;
 use Exception;
 
 class VersionHelper
 {
-    private const BLOCK_SUPPORT = 2566;
+    // 1.13 (the flattening) is the first version with block state palettes
+    private const BLOCK_SUPPORT = 1519;
     private const DATA_VERSIONS = [
-
+        5023 => [
+            "name" => "26.3",
+            "class" => BlockChunkV5023::class,
+            "level" => false,
+            "entities" => false,
+        ],
         3218 => [
             "name" => "1.19.3",
             "class" => BlockChunkV3105::class,
@@ -116,67 +123,67 @@ class VersionHelper
         ],
         2230 => [
             "name" => "1.15.2",
-            "class" => BlockChunkV1139::class,
+            "class" => BlockChunkV1519::class,
             "level" => true,
             "entities" => true,
         ],
         2227 => [
             "name" => "1.15.1",
-            "class" => BlockChunkV1139::class,
+            "class" => BlockChunkV1519::class,
             "level" => true,
             "entities" => true,
         ],
         2225 => [
             "name" => "1.15",
-            "class" => BlockChunkV1139::class,
+            "class" => BlockChunkV1519::class,
             "level" => true,
             "entities" => true,
         ],
         1976 => [
             "name" => "1.14.4",
-            "class" => BlockChunkV1139::class,
+            "class" => BlockChunkV1519::class,
             "level" => true,
             "entities" => true,
         ],
         1968 => [
             "name" => "1.14.3",
-            "class" => BlockChunkV1139::class,
+            "class" => BlockChunkV1519::class,
             "level" => true,
             "entities" => true,
         ],
         1963 => [
             "name" => "1.14.2",
-            "class" => BlockChunkV1139::class,
+            "class" => BlockChunkV1519::class,
             "level" => true,
             "entities" => true,
         ],
         1957 => [
             "name" => "1.14.1",
-            "class" => BlockChunkV1139::class,
+            "class" => BlockChunkV1519::class,
             "level" => true,
             "entities" => true,
         ],
         1952 => [
             "name" => "1.14",
-            "class" => BlockChunkV1139::class,
+            "class" => BlockChunkV1519::class,
             "level" => true,
             "entities" => true,
         ],
         1631 => [
             "name" => "1.13.2",
-            "class" => BlockChunkV1139::class,
+            "class" => BlockChunkV1519::class,
             "level" => true,
             "entities" => true,
         ],
         1628 => [
             "name" => "1.13.1",
-            "class" => BlockChunkV1139::class,
+            "class" => BlockChunkV1519::class,
             "level" => true,
             "entities" => true,
         ],
         1519 => [
             "name" => "1.13",
-            "class" => BlockChunkV1139::class,
+            "class" => BlockChunkV1519::class,
             "level" => true,
             "entities" => true,
         ],
@@ -201,23 +208,23 @@ class VersionHelper
     ];
 
     /**
+     * Returns the newest listed data version that is not newer than $dataVersion.
+     * Versions that are not listed use the format of the closest older listed version,
+     * versions older than the oldest listed version use the oldest one.
+     *
      * @param int $dataVersion
      * @return int
-     * @throws Exception
      */
     protected static function getSupportedVersion(int $dataVersion): int
     {
-        if (array_key_exists($dataVersion, static::DATA_VERSIONS)) {
-            return $dataVersion;
+        $supportedVersions = array_keys(static::DATA_VERSIONS);
+        rsort($supportedVersions);
+        foreach ($supportedVersions as $supportedVersion) {
+            if ($dataVersion >= $supportedVersion) {
+                return $supportedVersion;
+            }
         }
-        $latest = max(array_keys(static::DATA_VERSIONS));
-        if ($dataVersion > $latest) {
-            return $latest;
-        }
-        if ($dataVersion < 1139) {
-            return 1139;
-        }
-        throw new VersionNotSupportedException(static::DATA_VERSIONS[$dataVersion]["name"]);
+        return min($supportedVersions);
     }
 
     /**

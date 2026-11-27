@@ -27,6 +27,14 @@ abstract class BlockChunk extends Chunk
     protected array $sections = [];
 
     /**
+     * Section tags without blocks (e.g. only "SkyLight"), by section Y.
+     * They are written back unchanged.
+     *
+     * @var CompoundTag[]
+     */
+    protected array $sectionTagsWithoutBlocks = [];
+
+    /**
      * @var BlockEntity[]
      */
     protected array $blockEntities = [];
@@ -62,6 +70,8 @@ abstract class BlockChunk extends Chunk
                 $section = $this->newSectionFromTag($sectionTag, $this->coordinates, $this->version);
                 if ($section !== null) {
                     $this->sections[] = $section;
+                } else {
+                    $this->sectionTagsWithoutBlocks[$sectionTag->getByte("Y")->getValue()] = $sectionTag;
                 }
             }
             return;
@@ -171,7 +181,13 @@ abstract class BlockChunk extends Chunk
      */
     public function addEmptySection(McCoordinates3D $coordinates): Section
     {
-        $section = $this->newEmptySection(Section::getSectionCoordinates($coordinates), $this->version);
+        $sectionCoordinates = Section::getSectionCoordinates($coordinates);
+        $section = $this->newEmptySection($sectionCoordinates, $this->version);
+        // Keeps the other entries of a section that had no blocks yet, instead of writing a second section with the same Y
+        if (isset($this->sectionTagsWithoutBlocks[$sectionCoordinates->y])) {
+            $section->setTag($this->sectionTagsWithoutBlocks[$sectionCoordinates->y]);
+            unset($this->sectionTagsWithoutBlocks[$sectionCoordinates->y]);
+        }
         $this->sections[] = $section;
         return $section;
     }
@@ -255,7 +271,7 @@ abstract class BlockChunk extends Chunk
     protected function createBlockEntitiesTag(): ListTag
     {
         $blockEntities = new ListTag();
-        $blockEntities->setContentTag(CompoundTag::TYPE);
+        $blockEntities->setContentType(CompoundTag::TYPE);
         foreach ($this->blockEntities as $blockEntity) {
             $blockEntities[] = $blockEntity->createTag();
         }
@@ -271,7 +287,7 @@ abstract class BlockChunk extends Chunk
     protected function createEntitiesTag(): ListTag
     {
         $entities = new ListTag();
-        $entities->setContentTag(CompoundTag::TYPE);
+        $entities->setContentType(CompoundTag::TYPE);
         foreach ($this->entities as $entity) {
             $entities[] = $entity->createTag();
         }
@@ -287,9 +303,12 @@ abstract class BlockChunk extends Chunk
     protected function createSectionsTag(): ListTag
     {
         $sections = new ListTag();
-        $sections->setContentTag(CompoundTag::TYPE);
+        $sections->setContentType(CompoundTag::TYPE);
         foreach ($this->sections as $section) {
             $sections[] = $section->createTag();
+        }
+        foreach ($this->sectionTagsWithoutBlocks as $sectionTag) {
+            $sections[] = $sectionTag;
         }
         return $sections;
     }

@@ -46,7 +46,7 @@ class SectionV2860 extends SectionV2730
         $section->coordinates = $coordinates;
         $section->version = $version;
 
-        $paletteBlocks[] = PaletteBlock::new();
+        $paletteBlocks[] = static::newPaletteBlock();
         $palette = static::newPalette($paletteBlocks);
 
         $dataBlocks = [];
@@ -76,6 +76,14 @@ class SectionV2860 extends SectionV2730
         }
         $section->blockState = static::newBlockStateFromTag($section, $blockStateTag);
         return $section;
+    }
+
+    /**
+     * @return PaletteBlock
+     */
+    protected static function newPaletteBlock(): PaletteBlock
+    {
+        return PaletteBlock::new();
     }
 
     /**
@@ -153,7 +161,7 @@ class SectionV2860 extends SectionV2730
      */
     public function createTag(): CompoundTag
     {
-        $section = new CompoundTag();
+        $section = $this->getBaseTag();
         $section->set("Y", (new ByteTag())->setValue($this->coordinates->y));
         $section->set($this->blockStateTagName, $this->blockState->createTag($this->coordinates->y));
         if($this->biomes !== null){
