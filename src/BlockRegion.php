@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Aternos\Hawk;
 
+use Aternos\Hawk\Exceptions\EntitiesNotInBlockRegionException;
+use Aternos\Hawk\Exceptions\UnexpectedChunkTypeException;
 use Aternos\Nbt\Tag\CompoundTag;
 use Exception;
 
@@ -47,7 +49,7 @@ class BlockRegion extends Region
         if ($chunk instanceof BlockChunk) {
             return $chunk->getBlock($coordinates);
         }
-        throw new Exception("Wrong chunk type");
+        throw new UnexpectedChunkTypeException($chunk, BlockChunk::class, $this->fileName);
     }
 
     /**
@@ -61,10 +63,10 @@ class BlockRegion extends Region
         $chunk = $this->getChunkFromBlock(McCoordinatesFloat::get3DCoordinates($coordinates));
 
         if(!VersionHelper::hasEntitiesTag($this->version)){
-            throw new Exception("Entities not stored in block region");
+            throw new EntitiesNotInBlockRegionException($this->fileName, $this->version);
         }
         if (!($chunk instanceof BlockChunk)) {
-            throw new Exception("Wrong chunk type");
+            throw new UnexpectedChunkTypeException($chunk, BlockChunk::class, $this->fileName);
         }
         return $chunk->getEntities($name, $coordinates);
     }
@@ -80,7 +82,7 @@ class BlockRegion extends Region
         $chunk = $this->getChunkFromBlock(McCoordinatesFloat::get3DCoordinates($coordinates));
 
         if (!($chunk instanceof BlockChunk)) {
-            throw new Exception("Wrong chunk type");
+            throw new UnexpectedChunkTypeException($chunk, BlockChunk::class, $this->fileName);
         }
         return $chunk->getBlockEntities($name, $coordinates);
     }
@@ -94,10 +96,10 @@ class BlockRegion extends Region
     {
         $chunk = $this->getChunkFromBlock($blockCoordinates);
         if (!($chunk instanceof BlockChunk)) {
-            throw new Exception("Wrong chunk type");
+            throw new UnexpectedChunkTypeException($chunk, BlockChunk::class, $this->fileName);
         }
         if(!VersionHelper::hasEntitiesTag($this->version)){
-            throw new Exception("Entities not stored in block region");
+            throw new EntitiesNotInBlockRegionException($this->fileName, $this->version);
         }
         return $chunk->getAllEntities();
     }
@@ -111,7 +113,7 @@ class BlockRegion extends Region
     {
         $chunk = $this->getChunkFromBlock($blockCoordinates);
         if (!($chunk instanceof BlockChunk)) {
-            throw new Exception("Wrong chunk type");
+            throw new UnexpectedChunkTypeException($chunk, BlockChunk::class, $this->fileName);
         }
         return $chunk->getAllBlockEntities();
     }
@@ -132,7 +134,7 @@ class BlockRegion extends Region
             $chunk->replaceBlock($coordinates, $blockName);
             return;
         }
-        throw new Exception("Wrong chunk type");
+        throw new UnexpectedChunkTypeException($chunk, BlockChunk::class, $this->fileName);
 
     }
 
@@ -148,7 +150,7 @@ class BlockRegion extends Region
             $chunk->deleteEntity($entity);
             return;
         }
-        throw new Exception("Wrong chunk type");
+        throw new UnexpectedChunkTypeException($chunk, BlockChunk::class, $this->fileName);
     }
 
     /**
@@ -163,6 +165,6 @@ class BlockRegion extends Region
             $chunk->deleteBlockEntity($entity);
             return;
         }
-        throw new Exception("Wrong chunk type");
+        throw new UnexpectedChunkTypeException($chunk, BlockChunk::class, $this->fileName);
     }
 }

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Aternos\Hawk;
 
+use Aternos\Hawk\Exceptions\DataBlockNotFoundException;
 use Aternos\Nbt\Tag\LongArrayTag;
-use Exception;
 
 abstract class Data
 {
@@ -112,7 +112,7 @@ abstract class Data
     /**
      * @param int $index
      * @return DataBlock
-     * @throws Exception
+     * @throws DataBlockNotFoundException
      */
     public function getDataBlock(int $index): DataBlock
     {
@@ -120,7 +120,7 @@ abstract class Data
         if (isset($this->dataBlocks[$index])) {
             return $this->dataBlocks[$index];
         }
-        throw new Exception("DataBlocks[" . $index . "] is null.");
+        throw new DataBlockNotFoundException("Section block data has no block at index " . $index . ".");
     }
 
     /**

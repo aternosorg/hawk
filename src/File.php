@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Aternos\Hawk;
 
-use Exception;
+use Aternos\Hawk\Exceptions\FileException;
 
 class File extends AbstractFile
 {
     /**
      * @inheritDoc
-     * @throws Exception "Error while reading"
+     * @throws FileException
      */
     public function read(int $length): string
     {
@@ -22,12 +22,12 @@ class File extends AbstractFile
         if ($res !== false) {
             return $res;
         }
-        throw new Exception("Error while reading.");
+        throw new FileException("read " . $length . " bytes from", FileException::getPathOfFile($this));
     }
 
     /**
      * @inheritDoc
-     * @throws Exception "Error while writing"
+     * @throws FileException
      */
     public function write(string $data): int
     {
@@ -36,13 +36,13 @@ class File extends AbstractFile
             return $res;
         }
         //@codeCoverageIgnoreStart
-        throw new Exception("Error while writing.");
+        throw new FileException("write " . strlen($data) . " bytes to", FileException::getPathOfFile($this));
         //@codeCoverageIgnoreEnd
     }
 
     /**
      * @inheritDoc
-     * @throws Exception "Error while seeking"
+     * @throws FileException
      */
     public function seek(int $offset, int $seekType): bool
     {
@@ -51,12 +51,12 @@ class File extends AbstractFile
             return true;
         }
 
-        throw new Exception("Error while seeking.");
+        throw new FileException("seek to offset " . $offset . " in", FileException::getPathOfFile($this));
     }
 
     /**
      * @inheritDoc
-     * @throws Exception "Error while getting pointer position."
+     * @throws FileException
      */
     public function tell(): int
     {
@@ -65,7 +65,7 @@ class File extends AbstractFile
             return $res;
         }
         //@codeCoverageIgnoreStart
-        throw new Exception("Error while getting pointer position.");
+        throw new FileException("get the pointer position in", FileException::getPathOfFile($this));
         //@codeCoverageIgnoreEnd
     }
 }

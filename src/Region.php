@@ -6,6 +6,8 @@ namespace Aternos\Hawk;
 
 use Aternos\Hawk\Enums\SeekType;
 use Aternos\Hawk\Exceptions\ChunkDoesNotExistException;
+use Aternos\Hawk\Exceptions\InvalidCompressionSchemeException;
+use Aternos\Hawk\Exceptions\UnexpectedTagTypeException;
 use Aternos\Nbt\IO\Reader\GZipCompressedStringReader;
 use Aternos\Nbt\IO\Reader\StringReader;
 use Aternos\Nbt\IO\Reader\ZLibCompressedStringReader;
@@ -162,6 +164,9 @@ abstract class Region
     /**
      * @param McCoordinates2D $coordinates
      * @return Chunk
+     * @throws ChunkDoesNotExistException
+     * @throws InvalidCompressionSchemeException
+     * @throws UnexpectedTagTypeException
      * @throws Exception
      */
     protected function readChunk(McCoordinates2D $coordinates): Chunk
@@ -173,7 +178,7 @@ abstract class Region
         $offset = $location >> 8;
         $length = ($location & 0xFF) * 4096;
         if ($offset === 0 && $length === 0) {
-            throw new ChunkDoesNotExistException("chunk coordinates: " . $coordinates);
+            throw new ChunkDoesNotExistException("Chunk " . $coordinates . " does not exist in region file \"" . $this->fileName . "\".");
         }
         $this->file->seek($offset * 4096, SeekType::SEEK_SET);
         $compressedDataLength = $this->file->readStringToUInt32BigEndian();
@@ -182,11 +187,11 @@ abstract class Region
             1 => new GZipCompressedStringReader($this->file->read($compressedDataLength - 1), NbtFormat::JAVA_EDITION),
             2 => new ZLibCompressedStringReader($this->file->read($compressedDataLength - 1), NbtFormat::JAVA_EDITION),
             3 => new StringReader($this->file->read($compressedDataLength - 1), NbtFormat::JAVA_EDITION),
-            default => throw new Exception("Wrong compression scheme."),
+            default => throw new InvalidCompressionSchemeException($compressionScheme, $this->fileName, $coordinates),
         };
         $tag = Tag::load($reader);
         if (!($tag instanceof CompoundTag)) {
-            throw new Exception("Wrong tag type.");
+            throw new UnexpectedTagTypeException("Chunk " . $coordinates . " in region file \"" . $this->fileName . "\" is not a compound tag.");
         }
         $this->version = $tag->getInt("DataVersion")->getValue();
         return $this->addNewChunk($location, $offset, $compressedDataLength, $compressionScheme, $tag, $coordinates, $this->version);

@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace Aternos\Hawk;
 
+use Aternos\Hawk\Exceptions\FileException;
+use Aternos\Hawk\Exceptions\InvalidCompressionSchemeException;
+use Aternos\Hawk\Exceptions\InvalidRegionFilesException;
+use Aternos\Hawk\Exceptions\RegionNotFoundException;
+use Aternos\Hawk\Exceptions\SectionNotFoundException;
 use Exception;
 
 class Hawk
@@ -23,23 +28,23 @@ class Hawk
     /**
      * @param AbstractFile[] $blockFiles
      * @param AbstractFile[] $entitiesFiles
-     * @throws Exception
+     * @throws InvalidRegionFilesException
      */
     public function __construct(array $blockFiles = [], array $entitiesFiles = [])
     {
         if (empty($blockFiles) && empty($entitiesFiles)) {
-            throw new Exception("Neither block files nor entities files found.");
+            throw new InvalidRegionFilesException("Neither block files nor entities files found.");
         }
 
         foreach ($blockFiles as $file) {
             if (!($file instanceof AbstractFile)) {
-                throw new Exception("Wrong file type for block files.");
+                throw new InvalidRegionFilesException("Block file is a " . get_debug_type($file) . ", expected " . AbstractFile::class . ".");
             }
         }
 
         foreach ($entitiesFiles as $file) {
             if (!($file instanceof AbstractFile)) {
-                throw new Exception("Wrong file type for entities files.");
+                throw new InvalidRegionFilesException("Entities file is a " . get_debug_type($file) . ", expected " . AbstractFile::class . ".");
             }
         }
 
@@ -112,7 +117,7 @@ class Hawk
     {
         $region = $this->getRegion($this->blockRegions, Region::getRegionCoordinatesFromBlockCoordinates($coordinates));
         if (!($region instanceof BlockRegion)) {
-            throw new Exception("Not a block region.");
+            throw new RegionNotFoundException("No block region file found for region " . $region->getCoordinates() . ".");
         }
         return $region;
     }
@@ -126,7 +131,7 @@ class Hawk
     {
         $region = $this->getRegion($this->entitiesRegions, Region::getRegionCoordinatesFromBlockCoordinates($coordinates));
         if (!($region instanceof EntitiesRegion)) {
-            throw new Exception("Not a entities region.");
+            throw new RegionNotFoundException("No entities region file found for region " . $region->getCoordinates() . ".");
         }
         return $region;
     }
@@ -140,7 +145,7 @@ class Hawk
     {
         $region = $this->getRegion($this->blockRegions, Region::getRegionCoordinatesFromChunkCoordinates($coordinates));
         if (!($region instanceof BlockRegion)) {
-            throw new Exception("Not a block region.");
+            throw new RegionNotFoundException("No block region file found for region " . $region->getCoordinates() . ".");
         }
         return $region;
     }
@@ -154,7 +159,7 @@ class Hawk
     {
         $region = $this->getRegion($this->entitiesRegions, Region::getRegionCoordinatesFromChunkCoordinates($coordinates));
         if (!($region instanceof EntitiesRegion)) {
-            throw new Exception("Not a entities region.");
+            throw new RegionNotFoundException("No entities region file found for region " . $region->getCoordinates() . ".");
         }
         return $region;
     }
@@ -163,7 +168,7 @@ class Hawk
      * @param array $regions
      * @param McCoordinates $coordinates
      * @return Region
-     * @throws Exception
+     * @throws RegionNotFoundException
      */
     protected function getRegion(array $regions, McCoordinates $coordinates): Region
     {
@@ -172,14 +177,14 @@ class Hawk
                 return $region;
             }
         }
-        $message = (!empty($regions)) ? get_class($regions[0]) . " not found." : "Empty array.";
-        throw new Exception($message);
+        throw new RegionNotFoundException("No region file loaded for region " . $coordinates . ".");
     }
 
     /**
      * @param McCoordinates3D $coordinates
      * @return DataBlock Block at $coordinates
-     * @throws Exception "Section not found.";
+     * @throws SectionNotFoundException
+     * @throws Exception
      */
     public function getBlock(McCoordinates3D $coordinates): DataBlock
     {
@@ -193,7 +198,8 @@ class Hawk
      * @param McCoordinates3D $coordinates
      * @param string $blockName
      * @return void
-     * @throws Exception "Wrong compression scheme"
+     * @throws InvalidCompressionSchemeException
+     * @throws Exception
      */
     public function replaceBlock(McCoordinates3D $coordinates, string $blockName = "minecraft:stone"): void
     {
@@ -301,7 +307,7 @@ class Hawk
      * Saves every region to its file
      *
      * @return void
-     * @throws Exception "Error while seeking/writing"
+     * @throws FileException
      */
     public function save(): void
     {

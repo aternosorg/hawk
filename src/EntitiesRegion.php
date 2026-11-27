@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Aternos\Hawk;
 
+use Aternos\Hawk\Exceptions\UnexpectedChunkTypeException;
 use Aternos\Nbt\Tag\CompoundTag;
 use Exception;
 
@@ -45,7 +46,7 @@ class EntitiesRegion extends Region
     {
         $chunk = $this->getChunkFromBlock(McCoordinatesFloat::get3DCoordinates($coordinates));
         if (!($chunk instanceof EntitiesChunk)) {
-            throw new Exception("Wrong chunk type");
+            throw new UnexpectedChunkTypeException($chunk, EntitiesChunk::class, $this->fileName);
         }
         return $chunk->getEntities($name, $coordinates);
     }
@@ -59,7 +60,7 @@ class EntitiesRegion extends Region
     {
         $chunk = $this->getChunkFromBlock($blockCoordinates);
         if (!($chunk instanceof EntitiesChunk)) {
-            throw new Exception("Wrong chunk type");
+            throw new UnexpectedChunkTypeException($chunk, EntitiesChunk::class, $this->fileName);
         }
 
         $entities = [];
@@ -78,7 +79,7 @@ class EntitiesRegion extends Region
     {
         $chunk = $this->getChunkFromBlock(McCoordinatesFloat::get3DCoordinates($entity->getCoordinates()));
         if (!($chunk instanceof EntitiesChunk)) {
-            throw new Exception("Wrong chunk type");
+            throw new UnexpectedChunkTypeException($chunk, EntitiesChunk::class, $this->fileName);
         }
         $chunk->deleteEntity($entity);
     }
