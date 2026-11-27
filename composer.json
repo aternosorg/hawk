@@ -11,8 +11,10 @@
     ],
     "require": {
         "php": ">=8.4",
-        "ext-readline": "*",
         "aternos/nbt": "^2.0"
+    },
+    "suggest": {
+        "ext-readline": "Needed to run the interactive delete examples in examples/"
     },
     "require-dev": {
         "phpunit/phpunit": "^13.4",
