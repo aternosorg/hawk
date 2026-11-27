@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Aternos\Hawk\Versions\v1519;
 
 use Aternos\Hawk\Data;

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Aternos\Hawk;
 
 class McCoordinatesFloat extends McCoordinates
@@ -8,7 +10,7 @@ class McCoordinatesFloat extends McCoordinates
 
     public static function get3DCoordinates(McCoordinatesFloat $coordinates): McCoordinates3D
     {
-        return new McCoordinates3D(floor($coordinates->x), floor($coordinates->y), floor($coordinates->z));
+        return new McCoordinates3D((int) floor($coordinates->x), (int) floor($coordinates->y), (int) floor($coordinates->z));
     }
 
     public function __construct(float $x, float $y, float $z)

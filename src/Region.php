@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Aternos\Hawk;
 
 use Aternos\Hawk\Enums\SeekType;
@@ -44,7 +46,7 @@ abstract class Region
     public static function getRegionCoordinatesFromFile(AbstractFile $file): McCoordinates2D
     {
         $fileName = explode(".", $file->getFileName());
-        return new McCoordinates2D($fileName[1], $fileName[2]);
+        return new McCoordinates2D((int) $fileName[1], (int) $fileName[2]);
     }
 
     /**
@@ -53,7 +55,7 @@ abstract class Region
      */
     public static function getRegionCoordinatesFromBlockCoordinates(McCoordinates3D $coordinates): McCoordinates2D
     {
-        return new McCoordinates2D(floor($coordinates->x / 512), floor($coordinates->z / 512));
+        return new McCoordinates2D((int) floor($coordinates->x / 512), (int) floor($coordinates->z / 512));
     }
 
     /**
@@ -62,7 +64,7 @@ abstract class Region
      */
     public static function getRegionCoordinatesFromChunkCoordinates(McCoordinates2D $coordinates): McCoordinates2D
     {
-        return new McCoordinates2D(floor($coordinates->x / 32), floor($coordinates->z / 32));
+        return new McCoordinates2D((int) floor($coordinates->x / 32), (int) floor($coordinates->z / 32));
     }
 
     /**
@@ -202,7 +204,7 @@ abstract class Region
     {
         foreach ($this->getChunks() as $chunk) {
             $this->getFile()->seek(0, SeekType::SEEK_END);
-            $chunk->setOffset($this->getFile()->tell() / 4096);
+            $chunk->setOffset(intdiv($this->getFile()->tell(), 4096));
             $chunkData = $chunk->getChunkData();
             $this->getFile()->write($chunkData);
             $this->getFile()->seek($this->calcOffset($chunk->getCoordinates()),

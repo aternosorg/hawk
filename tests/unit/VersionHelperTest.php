@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Aternos\Hawk\Tests\Unit;
 
 use Aternos\Hawk\Versions\v1139\BlockChunkV1139;

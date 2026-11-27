@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Aternos\Hawk\Versions\v3105;
 
 use Aternos\Hawk\Versions\v2975\DataV2975;
